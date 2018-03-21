@@ -1,7 +1,8 @@
 import requests
 import pprint
 
-print('Hello World!')
 
 
-iuhliuhliuhliu
+def get_request(request):
+    response = requests.get(request).json()
+    return response
