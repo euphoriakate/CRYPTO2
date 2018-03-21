@@ -3,8 +3,8 @@ import pprint
 from collections import OrderedDict
 
 response = requests.get('https://min-api.cryptocompare.com/data/all/coinlist').json()
-#pairs = list(response.keys())
-#pprint.pprint(pairs)
+
+
 pprint.pprint(response['Data'].keys())
 pprint.pprint(response['Data']['KICK'])
 #data_ordered_dict = OrderedDict(sorted(response['Data'], key = lambda x:sorted(x.keys())))
