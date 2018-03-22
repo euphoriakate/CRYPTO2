@@ -1,35 +1,38 @@
 import requests
 import pprint
+import DataPuller
 
 
 
-def get_request(request):
-    response = requests.get(request).json()
-    return response
+
+class CryptoCompare(DataPuller):
 
 
-def get_coin_list():
-    coin_list_url = 'https://min-api.cryptocompare.com/data/all/coinlist'
-    coin_list = get_request(coin_list_url)['Data']
-    return coin_list
 
 
-def get_price(from_currency = 'BTC', to_currency = 'USD'):
 
-    if isinstance(list, to_currency):
-        to_currency_string = ''
-        for i in to_currency:
-            if to_currency_string == '':
-                to_currency_string = to_currency_string + i
-            else:
-                to_currency_string = to_currency_string + ',' + i
+    def get_coin_list():
+        coin_list_url = 'https://min-api.cryptocompare.com/data/all/coinlist'
+        coin_list = get_request(coin_list_url)['Data']
+        return coin_list
+
+
+    def get_price(from_currency = 'BTC', to_currency = 'USD'):
+
+        if isinstance(list, to_currency):
+            to_currency_string = ''
+            for i in to_currency:
+                if to_currency_string == '':
+                    to_currency_string = to_currency_string + i
+                else:
+                    to_currency_string = to_currency_string + ',' + i
+
+            price_url = 'https://min-api.cryptocompare.com/data/price?fsym=' + from_currency + '&tsyms=' + to_currency
 
         price_url = 'https://min-api.cryptocompare.com/data/price?fsym=' + from_currency + '&tsyms=' + to_currency
-
-    price_url = 'https://min-api.cryptocompare.com/data/price?fsym=' + from_currency + '&tsyms=' + to_currency
-    print (price_url)
-    price = get_request(price_url)
-    return price
+        print (price_url)
+        price = get_request(price_url)
+        return price
 
 '''
 
