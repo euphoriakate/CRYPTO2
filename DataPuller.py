@@ -1,23 +1,13 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import requests
 
 
 class DataPuller:
     __metaclass__ = ABCMeta
 
-    @abstractmethod
-    def get_request(self, request):
-        response = requests.get(request).json()
-        return response
+    def json_data_obtain(self, url, param=None):
+        return requests.get(url=url, params=param).json()
 
-'''
-class Animal:
-    __metaclass__ = ABCMeta
+    def xml_data_obtain(self):
+        pass
 
-    @abstractmethod
-    def say_something(self): pass
-
-class Cat(Animal):
-    def say_something(self):
-        return "Miauuu!"
-'''
