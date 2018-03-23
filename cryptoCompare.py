@@ -6,25 +6,92 @@ class cryptoCompare(DataPuller):
 
     def __init__(self):
 
-        self.coin_url = 'https://min-api.cryptocompare.com/data/all/coinlist'
-        self.price_url = 'https://min-api.cryptocompare.com/data/price'
-        self.multiprice_url = 'https://min-api.cryptocompare.com/data/multiprice'
+        self.url_coin = 'https://min-api.cryptocompare.com/data/all/coinlist'
+        self.url_price = 'https://min-api.cryptocompare.com/data/price'
+        self.url_pricemulti = 'https://min-api.cryptocompare.com/data/pricemulti'
+        self.url_pricemultifull = 'https://min-api.cryptocompare.com/data/pricemultifull'
+        self.url_generate_avg = 'https://min-api.cryptocompare.com/data/generateAvg'
 
     def get_coin_info(self):
-        return self.json_data_obtain(self.coin_url)['Data']
+        '''
+        Get general info for all the coins available on the website.
+        Get coin list example https://www.cryptocompare.com/api/data/coinlist/
+        '''
+        return self.json_data_obtain(self.url_coin)['Data']
 
-    def get_coin_price(self, from_currency='BTC', to_currency='KICK,USD,ETH', exchange=None, multiprice=False):
+    def get_coin_price(self, from_currency='BTC', to_currency='KICK,USD,ETH', exchange=None, multiprice=False, full=False, avg=None):
+        '''
+                Get the latest price for a list of one or more currencies. Really fast, 20-60 ms. Cached each 10 seconds.
+                Documentation at https://min-api.cryptocompare.com/.
+                Examples:
+                            https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=XMR,ETH,ZEC, REP
+                            https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,EUR&e=Coinbase
+        '''
+        if avg:
+            url_for_request = self.url_generate_avg
+            fs = 'fsym'
+            ts = 'tsym'
+        elif multiprice:
+                url_for_request = self.url_pricemultifull if full else self.url_pricemulti
+                fs = 'fsyms'
+                ts = 'tsyms'
+        else:
+            url_for_request = self.url_price
+            fs = 'fsym'
+            ts = 'tsyms'
+
+        print(url_for_request)
+
         payload = {
-                   'fsym': from_currency,
-                   'tsyms': to_currency,
-                   'e': exchange
-                   }
-        url_for_request = self.multiprice_url if multiprice else self.price_url
+            fs: from_currency,
+            ts: to_currency,
+            'e': exchange
+        }
 
         r = requests.get(url_for_request, params=payload)
         print(r.url)
 
         return self.json_data_obtain(url=url_for_request, param=payload)
 
-    def get_coin_multiprice(self, from_currency='BTC', to_currency='KICK', exchange=None):
-        self.get_coin_price(from_currency, to_currency, exchange, multiprice=True)
+    def get_coin_pricemulti(self, from_currency='BTC', to_currency='KICK', exchange=None):
+        '''
+        Get a matrix of currency prices.
+        :param from_currency:
+        :param to_currency:
+        :param exchange:
+        :return:
+        Examples:
+                https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DASH,REP&tsyms=BTC,USD,EUR,XMR&e=Coinbase
+                https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH&tsyms=USD
+        '''
+        return self.get_coin_price(from_currency, to_currency, exchange, multiprice=True)
+
+    def get_coin_pricemultifull(self, from_currency='BTC', to_currency='KICK', exchange=None):
+        '''
+        Get all the current trading info (price, vol, open, high, low etc) of any list of cryptocurrencies in any other currency that you need.
+        If the crypto does not trade directly into the toSymbol requested, BTC will be used for conversion.
+        This API also returns Display values for all the fields.If the opposite pair trades we invert it (eg.: BTC-XMR).
+        :param from_currency:
+        :param to_currency:
+        :param exchange:
+        :return:
+
+        Examples:
+                    https://min-api.cryptocompare.com/data/pricemultifull?fsyms=REP,ETH,DASH&tsyms=BTC,USD,EUR,XMR&e=Coinbase
+                    https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH&tsyms=USD
+        '''
+        return self.get_coin_price(from_currency, to_currency, exchange, multiprice=True, full=True)
+
+    def get_avg(self, from_currency='BTC', to_currency='USD', exchange='Bitfinex'):
+        '''
+        Compute the current trading info (price, vol, open, high, low etc) of the requested pair as a volume weighted average based on the markets requested.
+        :param from_currency:
+        :param to_currency:
+        :param exchange:
+        :return:
+
+        Examples:
+                https://min-api.cryptocompare.com/data/generateAvg?fsym=BTC&tsym=USD&e=Coinbase,Bitfinex
+        '''
+
+        return self.get_coin_price(from_currency, to_currency, exchange, avg=True)
