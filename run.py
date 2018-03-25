@@ -3,7 +3,9 @@ from cryptoCompare import cryptoCompare
 import psycopg2
 from config import config
 from datetime import datetime
+from Connector import Connector
 
+'''
 def connect():
     """ Connect to the PostgreSQL database server """
     conn = None
@@ -65,10 +67,23 @@ def insert_vendor(data):
     finally:
         if conn is not None:
             conn.close()
-
+'''
 
 if __name__ == '__main__':
-    #cryptoCompare = cryptoCompare()
+    cryptoCompare = cryptoCompare()
+    coin_json = cryptoCompare.get_coin_info()
+
+    conn = Connector()
+    for key, data in coin_json.items():
+        data = (data['Id'], key, data['CoinName'], data['FullName'], data['Algorithm'], data['ProofType'], data['PreMinedValue'], data['FullyPremined'], data['TotalCoinSupply'], data['TotalCoinsFreeFloat'], data['Sponsored'], data['Url'])
+        print(data)
+        conn.insert(schema='cryptocompare',table='coin', data=data)
+    conn.close()
+
+    #"TotalCoinSupply": "816060.9999",
+    #"TotalCoinSupply": "13,792,050"
+
+    #insert_string = (data['Id'], key, data['CoinName'])
     #pprint.pprint(cryptoCompare.get_coin_info())
     #pprint.pprint(cryptoCompare.get_coin_price('BTC', 'USD', 'CoinBase'))
     #pprint.pprint(cryptoCompare.get_coin_multiprice('BTC,ETH,LTC', 'USD,KICK'))
@@ -82,7 +97,9 @@ if __name__ == '__main__':
     #insert_vendor()
 
     #print(datetime.today())
-    data = (769483,'ILT', 'iOlite', 'iOlite (ILT)', 'Ethash', 'PoW',  None, None, None, 1000000000, None, 0, '/coins/ilt/overview')
+    #data = (769483,'ILT3', 'iOlite', 'iOlite (ILT)', 'Ethash', 'PoW',  None, None, None, 1000000000, None, 0, '/coins/ilt/overview')
 #{"Id":"769483","Url":"/coins/ilt/overview","ImageUrl":"/media/27010772/iqt.png","Name":"ILT","Symbol":"ILT","CoinName":"iOlite","FullName":"iOlite (ILT)","Algorithm":"Ethash","ProofType":"PoW","FullyPremined":"0","TotalCoinSupply":"1000000000","PreMinedValue":"N/A","TotalCoinsFreeFloat":"N/A","SortOrder":"2288","Sponsored":false}}
     #insert_vendor(data)
-    connect()
+    #conn = Connector()
+    #print(conn.)
+    #conn.insert(schema='cryptocompare',table='coin', data=data)
