@@ -4,6 +4,7 @@ import psycopg2
 from config import config
 from datetime import datetime
 from Connector import Connector
+from BD_Prosphero import Prosphero
 
 '''
 def connect():
@@ -70,23 +71,42 @@ def insert_vendor(data):
 '''
 
 if __name__ == '__main__':
-    cryptoCompare = cryptoCompare()
-    coin_json = cryptoCompare.get_coin_info()
+
 
     conn = Connector()
-    for key, data in coin_json.items():
-        data = (data['Id'], key, data['CoinName'], data['FullName'], data['Algorithm'], data['ProofType'], data['PreMinedValue'], data['FullyPremined'], data['TotalCoinSupply'], data['TotalCoinsFreeFloat'], data['Sponsored'], data['Url'])
-        print(data)
-        conn.insert(schema='cryptocompare',table='coin', data=data)
+
+    bd = Prosphero(conn)
+    coin_list = bd.get_all_coins()
+    cryptoCompare = cryptoCompare()
+
+    tsyms = ','.join([str(x[0]) for x in coin_list])
+
+    print(tsyms)
+    print(len(tsyms))
+
+    price = cryptoCompare.get_coin_pricemulti(from_currency='BTC,USD', to_currency=tsyms)
+    #pprint.pprint(cryptoCompare.get_coin_pricemulti(from_currency='BTC,USD', to_currency=tsyms))
+    pprint.pprint(price)
+
+    #make data for insert
+
+    for source_coin_cd, target_coin_dict in price.items():
+        for target_coin_cd, price in target_coin_dict.items():
+            row = (source_coin_cd, target_coin_cd, price)
+            bd.insert_price(row)
+
     conn.close()
 
-    #"TotalCoinSupply": "816060.9999",
-    #"TotalCoinSupply": "13,792,050"
+
+    #date = '01/06/2017'
+    #print(int(datetime.strptime(date, '%d/%m/%Y').timestamp()))
+
+    #pprint.pprint(cryptoCompare.get_price_historical('USD', 'BTC,ETH', '06/04/2017'))
 
     #insert_string = (data['Id'], key, data['CoinName'])
     #pprint.pprint(cryptoCompare.get_coin_info())
     #pprint.pprint(cryptoCompare.get_coin_price('BTC', 'USD', 'CoinBase'))
-    #pprint.pprint(cryptoCompare.get_coin_multiprice('BTC,ETH,LTC', 'USD,KICK'))
+    #pprint.pprint(cryptoCompare.get_coin_pricemulti('BTC,USD', 'ETH,KICK'))
     #pprint.pprint(cryptoCompare.get_coin_pricemultifull())
     #pprint.pprint(cryptoCompare.get_avg('ETH', 'BTC', exchange='Kraken'))
 
@@ -97,9 +117,16 @@ if __name__ == '__main__':
     #insert_vendor()
 
     #print(datetime.today())
-    #data = (769483,'ILT3', 'iOlite', 'iOlite (ILT)', 'Ethash', 'PoW',  None, None, None, 1000000000, None, 0, '/coins/ilt/overview')
-#{"Id":"769483","Url":"/coins/ilt/overview","ImageUrl":"/media/27010772/iqt.png","Name":"ILT","Symbol":"ILT","CoinName":"iOlite","FullName":"iOlite (ILT)","Algorithm":"Ethash","ProofType":"PoW","FullyPremined":"0","TotalCoinSupply":"1000000000","PreMinedValue":"N/A","TotalCoinsFreeFloat":"N/A","SortOrder":"2288","Sponsored":false}}
-    #insert_vendor(data)
-    #conn = Connector()
-    #print(conn.)
-    #conn.insert(schema='cryptocompare',table='coin', data=data)
+
+
+
+
+    '''
+    cryptoCompare = cryptoCompare()
+    coin_json = cryptoCompare.get_coin_info()
+    for key, data in coin_json.items():
+        data = (data['Id'], key, data['CoinName'], data['FullName'], data['Algorithm'], data['ProofType'], data['PreMinedValue'], data['FullyPremined'], data['TotalCoinSupply'], data['TotalCoinsFreeFloat'], data['Sponsored'], data['Url'])
+        print(data)
+        conn.insert(schema='cryptocompare',table='coin', data=data)
+    '''
+

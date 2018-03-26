@@ -1,6 +1,6 @@
 from DataPuller import DataPuller
 import requests
-
+import datetime
 
 class cryptoCompare(DataPuller):
 
@@ -11,6 +11,7 @@ class cryptoCompare(DataPuller):
         self.url_pricemulti = 'https://min-api.cryptocompare.com/data/pricemulti'
         self.url_pricemultifull = 'https://min-api.cryptocompare.com/data/pricemultifull'
         self.url_generate_avg = 'https://min-api.cryptocompare.com/data/generateAvg'
+        self.url_price_historical = 'https://min-api.cryptocompare.com/data/pricehistorical'
 
     def get_coin_info(self):
         '''
@@ -19,7 +20,7 @@ class cryptoCompare(DataPuller):
         '''
         return self.json_data_obtain(self.url_coin)['Data']
 
-    def get_coin_price(self, from_currency='BTC', to_currency='KICK,USD,ETH', exchange=None, multiprice=False, full=False, avg=None):
+    def get_coin_price(self, from_currency='BTC', to_currency='KICK,USD,ETH', exchange=None, multiprice=False, full=False, avg=None, date=None):
         '''
                 Get the latest price for a list of one or more currencies. Really fast, 20-60 ms. Cached each 10 seconds.
                 Documentation at https://min-api.cryptocompare.com/.
@@ -35,6 +36,11 @@ class cryptoCompare(DataPuller):
                 url_for_request = self.url_pricemultifull if full else self.url_pricemulti
                 fs = 'fsyms'
                 ts = 'tsyms'
+        elif date is not None:
+            url_for_request = self.url_price_historical
+            fs = 'fsym'
+            ts = 'tsyms'
+
         else:
             url_for_request = self.url_price
             fs = 'fsym'
@@ -64,6 +70,7 @@ class cryptoCompare(DataPuller):
                 https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DASH,REP&tsyms=BTC,USD,EUR,XMR&e=Coinbase
                 https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH&tsyms=USD
         '''
+        print('get_coin_pricemulti')
         return self.get_coin_price(from_currency, to_currency, exchange, multiprice=True)
 
     def get_coin_pricemultifull(self, from_currency='BTC', to_currency='KICK', exchange=None):
@@ -95,3 +102,23 @@ class cryptoCompare(DataPuller):
         '''
 
         return self.get_coin_price(from_currency, to_currency, exchange, avg=True)
+
+
+    def get_dayAvg(self, ):
+        '''
+        Get day average price. The values are based on hourly vwap data and the average can be calculated in different waysIt uses BTC conversion if data is not available because the coin is not trading in the specified currency.
+        If tryConversion is set to false it will give you the direct data. If no toTS is given it will automatically do the current day.
+        Also for different timezones use the UTCHourDiff paramThe calculation types are: HourVWAP - a VWAP of the hourly close price,MidHighLow - the average between the 24 H high and low.
+        VolFVolT - the total volume from / the total volume to (only avilable with tryConversion set to false so only for direct trades but the value should be the most accurate price)
+        :return:
+        '''
+
+        pass
+
+    def get_price_historical(self,from_currency,to_currency,date,exchange=None):
+        ts = int(datetime.datetime.strptime(date, '%d/%m/%Y').timestamp())
+        return self.get_coin_price(from_currency,to_currency,exchange,ts)
+
+
+
+
