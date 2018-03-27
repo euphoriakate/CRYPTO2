@@ -46,7 +46,7 @@ class cryptoCompare(DataPuller):
             fs = 'fsym'
             ts = 'tsyms'
 
-        print(url_for_request)
+        #print(url_for_request)
 
         payload = {
             fs: from_currency,

@@ -1,6 +1,6 @@
 from config import config
 import psycopg2
-
+import pprint
 
 class Connector:
 
@@ -32,6 +32,7 @@ class Connector:
             '''
         return item
 
+    '''
     def insert(self, schema, table, columns, data):
         """ insert a new vendor into the vendors table """
         row = ()
@@ -60,17 +61,54 @@ class Connector:
             #self.cur.close()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
-        #finally:
-        #    if self.conn is not None:
-        #        self.conn.close()
+    '''
+
+    def insert(self, schema, table, columns, data):
+        """ insert a new vendor into the vendors table """
+        #row_tuple = ()
+        #for insert_row in data:
+        #    for i in insert_row:
+        #        row_tuple = row_tuple + (self.handle(i),)
+
+
+        values_s = ','.join(['%s' for x in columns])
+
+        #print(row)
+        columns_name = ','.join([str(x) for x in columns])
+
+        #sql = 'INSERT INTO ' + schema + '.' + table + '(' + columns_name + """)
+        #         VALUES(""" + values_s + """);"""
+
+        #sql = """INSERT INTO cryptocompare.coin(id, code, short_name, full_name, algorithm, proof_type, is_trading, premined_value, fully_premined, total_coin_supply, total_coins_free_float, sponsored, url)
+        #             VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s );"""
+
+        args_str = b','.join(self.cur.mogrify('(%s,%s,%s)', x) for x in data).decode()
+
+        sql = 'INSERT INTO ' + schema + '.' + table + '(' + columns_name + """)
+                         VALUES """ + args_str
+        self.cur.execute(sql)
+
+        #print(sql, data)
+
+        try:
+            print('Try execute')
+            pprint.pprint(sql)
+            #self.cur.execute(sql, data)
+            self.cur.execute(sql)
+            print('Executed!')
+            # commit the changes to the database
+            self.conn.commit()
+            # close communication with the database
+            #self.cur.close()
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
 
     def select(self, schema, table, columns=None):
         if columns is not None:
             columns_to_select = ''.join(columns)
         else:
             columns_to_select = '*'
-        print(columns_to_select)
-        sql = 'select ' + columns_to_select + ' from ' + schema + '.' + table + ' limit 20'
+        sql = 'select ' + columns_to_select + ' from ' + schema + '.' + table
         print(sql)
         try:
             self.cur.execute(sql)

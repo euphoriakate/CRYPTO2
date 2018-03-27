@@ -79,21 +79,44 @@ if __name__ == '__main__':
     coin_list = bd.get_all_coins()
     cryptoCompare = cryptoCompare()
 
+    #tsyms_all = ','.join([str(x[0]) for x in coin_list])
+
+    j = 0
+    tsyms_list = []
+
+    while j + 10 <= len(coin_list):
+        tsyms = ','.join([str(x[0]) for x in coin_list[j:j+10]])
+        j += 10
+        tsyms_list.append(tsyms)
+
+    print(tsyms_list)
+
+    '''   
     tsyms = ','.join([str(x[0]) for x in coin_list])
 
     print(tsyms)
     print(len(tsyms))
+    '''
 
-    price = cryptoCompare.get_coin_pricemulti(from_currency='BTC,USD', to_currency=tsyms)
+    price_dict = []
+    for tsyms in tsyms_list:
+        data = cryptoCompare.get_coin_pricemulti(from_currency='BTC,USD', to_currency=tsyms)
+        price_dict.append(data)
+
+
     #pprint.pprint(cryptoCompare.get_coin_pricemulti(from_currency='BTC,USD', to_currency=tsyms))
-    pprint.pprint(price)
 
     #make data for insert
+    rows = ()
 
-    for source_coin_cd, target_coin_dict in price.items():
-        for target_coin_cd, price in target_coin_dict.items():
-            row = (source_coin_cd, target_coin_cd, price)
-            bd.insert_price(row)
+    for price in price_dict:
+        for source_coin_cd, target_coin_dict in price.items():
+            for target_coin_cd, price in target_coin_dict.items():
+                row = (source_coin_cd, target_coin_cd, price)
+                rows = rows + (row,)
+
+    pprint.pprint(rows)
+    bd.insert_price(rows)
 
     conn.close()
 
