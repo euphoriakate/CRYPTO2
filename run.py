@@ -2,18 +2,25 @@ import pprint
 from cryptoCompare import cryptoCompare
 from Connector import Connector
 from BD_Prosphero import Prosphero
-import logging
+import getpass
+import datetime
+import os
 
-logging.basicConfig(filename='prosphero.log', level=logging.DEBUG)
-logging.debug('This message should go to the log file')
-logging.info('So should this')
-logging.warning('And this, too')
+
+
+#logging.basicConfig(filename='prosphero.log', level=logging.DEBUG)
+#logging.debug('This message should go to the log file')
+#logging.info('So should this')
+#logging.warning('And this, too')
 
 if __name__ == '__main__':
-    pass
 
-    '''
+    import logging
+    logging.basicConfig(filename='prosphero.log', level=logging.DEBUG)
+    logging.info('Program started by ' + getpass.getuser() + ' at ' + str(datetime.datetime.utcnow()) + ' from directory ' + os.path.dirname(os.path.abspath(__file__)))
+
     conn = Connector() #set connection to database
+    '''
     bd = Prosphero(conn)
     coin_list = bd.get_all_coins()
     cryptoCompare = cryptoCompare()
@@ -57,3 +64,5 @@ if __name__ == '__main__':
     #pprint.pprint(cryptoCompare.get_price_historical('USD', 'BTC,ETH', '06/04/2017'))
 
     '''
+
+    logging.info('Program ended execution at ' + str(datetime.datetime.utcnow()) )

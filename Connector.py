@@ -1,12 +1,17 @@
 from config import config
 import psycopg2
 import pprint
+import logging
+
+logging.getLogger(__name__)
 
 class Connector:
 
     def __init__(self):
         """ Connect to the PostgreSQL database server """
         try:
+            #start logging
+            logging.info('Class ' + self.__class__.__name__ + ' have been started initialize')
             #read connection parameter
             params = config()
             # connect to the PostgreSQL server
