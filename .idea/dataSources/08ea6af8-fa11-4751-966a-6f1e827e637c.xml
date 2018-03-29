@@ -101,7 +101,7 @@
     </schema>
     <schema id="18" parent="2" name="cryptocompare">
       <ObjectId>16391</ObjectId>
-      <IntrospectionTimestamp>2018-03-28.01:23:40.472</IntrospectionTimestamp>
+      <IntrospectionTimestamp>2018-03-30.00:54:35.737</IntrospectionTimestamp>
       <IntrospectionStateNumber>7543</IntrospectionStateNumber>
       <Visible>1</Visible>
     </schema>

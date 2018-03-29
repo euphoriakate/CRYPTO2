@@ -10,4 +10,3 @@ class DataPuller:
 
     def xml_data_obtain(self):
         pass
-
