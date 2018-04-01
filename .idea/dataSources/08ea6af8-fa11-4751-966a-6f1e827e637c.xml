@@ -79,8 +79,8 @@
     </role>
     <schema id="12" parent="2" name="public">
       <ObjectId>2200</ObjectId>
-      <IntrospectionTimestamp>2018-03-28.01:23:40.472</IntrospectionTimestamp>
-      <IntrospectionStateNumber>11550</IntrospectionStateNumber>
+      <IntrospectionTimestamp>2018-04-01.22:39:18.638</IntrospectionTimestamp>
+      <IntrospectionStateNumber>31968</IntrospectionStateNumber>
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
@@ -101,219 +101,230 @@
     </schema>
     <schema id="18" parent="2" name="cryptocompare">
       <ObjectId>16391</ObjectId>
-      <IntrospectionTimestamp>2018-03-30.00:54:35.737</IntrospectionTimestamp>
-      <IntrospectionStateNumber>7543</IntrospectionStateNumber>
+      <IntrospectionTimestamp>2018-04-01.22:45:00.433</IntrospectionTimestamp>
+      <IntrospectionStateNumber>31971</IntrospectionStateNumber>
       <Visible>1</Visible>
     </schema>
-    <view id="19" parent="12" name="coins">
+    <schema id="19" parent="2" name="telegram">
+      <ObjectId>16510</ObjectId>
+    </schema>
+    <sequence id="20" parent="12" name="seq">
+      <ObjectId>16615</ObjectId>
+      <StateNumber>31968</StateNumber>
+    </sequence>
+    <sequence id="21" parent="12" name="your_seq">
+      <ObjectId>16517</ObjectId>
+      <StateNumber>11570</StateNumber>
+    </sequence>
+    <view id="22" parent="12" name="coins">
       <ObjectId>16500</ObjectId>
       <StateNumber>11544</StateNumber>
     </view>
-    <view id="20" parent="12" name="last_price">
+    <view id="23" parent="12" name="last_price">
       <ObjectId>16505</ObjectId>
       <StateNumber>11550</StateNumber>
     </view>
-    <table id="21" parent="18" name="coin">
+    <table id="24" parent="18" name="coin">
       <ObjectId>16415</ObjectId>
       <StateNumber>5185</StateNumber>
     </table>
-    <table id="22" parent="18" name="price">
+    <table id="25" parent="18" name="price">
       <ObjectId>16484</ObjectId>
       <StateNumber>7542</StateNumber>
     </table>
-    <column id="23" parent="19" name="id">
+    <column id="26" parent="22" name="id">
       <Position>1</Position>
       <DataType>integer|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="24" parent="19" name="code">
+    <column id="27" parent="22" name="code">
       <Position>2</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="25" parent="19" name="short_name">
+    <column id="28" parent="22" name="short_name">
       <Position>3</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="26" parent="19" name="full_name">
+    <column id="29" parent="22" name="full_name">
       <Position>4</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="27" parent="19" name="algorithm">
+    <column id="30" parent="22" name="algorithm">
       <Position>5</Position>
       <DataType>varchar(32)|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="28" parent="19" name="proof_type">
+    <column id="31" parent="22" name="proof_type">
       <Position>6</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="29" parent="19" name="is_trading">
+    <column id="32" parent="22" name="is_trading">
       <Position>7</Position>
       <DataType>boolean|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="30" parent="19" name="premined_value">
+    <column id="33" parent="22" name="premined_value">
       <Position>8</Position>
       <DataType>boolean|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="31" parent="19" name="fully_premined">
+    <column id="34" parent="22" name="fully_premined">
       <Position>9</Position>
       <DataType>boolean|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="32" parent="19" name="total_coin_supply">
+    <column id="35" parent="22" name="total_coin_supply">
       <Position>10</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="33" parent="19" name="total_coins_free_float">
+    <column id="36" parent="22" name="total_coins_free_float">
       <Position>11</Position>
       <DataType>real|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="34" parent="19" name="sponsored">
+    <column id="37" parent="22" name="sponsored">
       <Position>12</Position>
       <DataType>integer|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="35" parent="19" name="url">
+    <column id="38" parent="22" name="url">
       <Position>13</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>11544</StateNumber>
     </column>
-    <column id="36" parent="20" name="last_price_dttm">
+    <column id="39" parent="23" name="last_price_dttm">
       <Position>1</Position>
       <DataType>timestamp|0</DataType>
       <StateNumber>11550</StateNumber>
     </column>
-    <column id="37" parent="20" name="source_coin">
+    <column id="40" parent="23" name="source_coin">
       <Position>2</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>11550</StateNumber>
     </column>
-    <column id="38" parent="20" name="target_coin">
+    <column id="41" parent="23" name="target_coin">
       <Position>3</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>11550</StateNumber>
     </column>
-    <column id="39" parent="20" name="price">
+    <column id="42" parent="23" name="price">
       <Position>4</Position>
       <DataType>double precision|0</DataType>
       <StateNumber>11550</StateNumber>
     </column>
-    <column id="40" parent="21" name="id">
+    <column id="43" parent="24" name="id">
       <Position>1</Position>
       <DataType>integer|0</DataType>
       <NotNull>1</NotNull>
       <StateNumber>601</StateNumber>
     </column>
-    <column id="41" parent="21" name="valid_from_dttm">
+    <column id="44" parent="24" name="valid_from_dttm">
       <Position>2</Position>
       <DataType>timestamp|0</DataType>
       <NotNull>1</NotNull>
       <StateNumber>603</StateNumber>
       <DefaultExpression>now()</DefaultExpression>
     </column>
-    <column id="42" parent="21" name="code">
+    <column id="45" parent="24" name="code">
       <Position>3</Position>
       <DataType>varchar(16)|0</DataType>
       <NotNull>1</NotNull>
       <StateNumber>2631</StateNumber>
     </column>
-    <column id="43" parent="21" name="short_name">
+    <column id="46" parent="24" name="short_name">
       <Position>4</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>1303</StateNumber>
     </column>
-    <column id="44" parent="21" name="full_name">
+    <column id="47" parent="24" name="full_name">
       <Position>5</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>601</StateNumber>
     </column>
-    <column id="45" parent="21" name="algorithm">
+    <column id="48" parent="24" name="algorithm">
       <Position>6</Position>
       <DataType>varchar(32)|0</DataType>
       <StateNumber>601</StateNumber>
     </column>
-    <column id="46" parent="21" name="proof_type">
+    <column id="49" parent="24" name="proof_type">
       <Position>7</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>1161</StateNumber>
     </column>
-    <column id="47" parent="21" name="is_trading">
+    <column id="50" parent="24" name="is_trading">
       <Position>8</Position>
       <DataType>boolean|0</DataType>
       <StateNumber>601</StateNumber>
     </column>
-    <column id="48" parent="21" name="premined_value">
+    <column id="51" parent="24" name="premined_value">
       <Position>9</Position>
       <DataType>boolean|0</DataType>
       <StateNumber>601</StateNumber>
     </column>
-    <column id="49" parent="21" name="fully_premined">
+    <column id="52" parent="24" name="fully_premined">
       <Position>10</Position>
       <DataType>boolean|0</DataType>
       <StateNumber>601</StateNumber>
     </column>
-    <column id="50" parent="21" name="total_coin_supply">
+    <column id="53" parent="24" name="total_coin_supply">
       <Position>11</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>2828</StateNumber>
     </column>
-    <column id="51" parent="21" name="total_coins_free_float">
+    <column id="54" parent="24" name="total_coins_free_float">
       <Position>12</Position>
       <DataType>real|0</DataType>
       <StateNumber>2771</StateNumber>
     </column>
-    <column id="52" parent="21" name="sponsored">
+    <column id="55" parent="24" name="sponsored">
       <Position>13</Position>
       <DataType>integer|0</DataType>
       <StateNumber>601</StateNumber>
     </column>
-    <column id="53" parent="21" name="url">
+    <column id="56" parent="24" name="url">
       <Position>14</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>601</StateNumber>
     </column>
-    <index id="54" parent="21" name="coin_pk">
+    <index id="57" parent="24" name="coin_pk">
       <ObjectId>16418</ObjectId>
       <ColNames>id
 valid_from_dttm</ColNames>
       <Unique>1</Unique>
     </index>
-    <index id="55" parent="21" name="coin_code_index">
+    <index id="58" parent="24" name="coin_code_index">
       <ObjectId>16437</ObjectId>
       <ColNames>code</ColNames>
     </index>
-    <key id="56" parent="21" name="coin_pk">
+    <key id="59" parent="24" name="coin_pk">
       <ObjectId>16419</ObjectId>
       <ColNames>id
 valid_from_dttm</ColNames>
       <UnderlyingIndexName>coin_pk</UnderlyingIndexName>
       <Primary>1</Primary>
     </key>
-    <column id="57" parent="22" name="valid_from_dt">
+    <column id="60" parent="25" name="valid_from_dttm">
       <Position>1</Position>
       <DataType>timestamp|0</DataType>
-      <StateNumber>7543</StateNumber>
+      <StateNumber>31971</StateNumber>
       <DefaultExpression>now()</DefaultExpression>
     </column>
-    <column id="58" parent="22" name="source_coin">
+    <column id="61" parent="25" name="source_coin">
       <Position>2</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>7542</StateNumber>
     </column>
-    <column id="59" parent="22" name="target_coin">
+    <column id="62" parent="25" name="target_coin">
       <Position>3</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>7542</StateNumber>
     </column>
-    <column id="60" parent="22" name="price">
+    <column id="63" parent="25" name="price">
       <Position>4</Position>
       <DataType>double precision|0</DataType>
       <StateNumber>7542</StateNumber>

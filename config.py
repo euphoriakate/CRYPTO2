@@ -1,11 +1,14 @@
 # !/usr/bin/python
 from configparser import ConfigParser
 import logging
+import os
+import sys
 
 logging.getLogger(__name__)
 
 
-def config(section, filename='database.ini'):
+def config(section):
+    filename = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/database.ini'
     # create a parser
     parser = ConfigParser()
     # read config file

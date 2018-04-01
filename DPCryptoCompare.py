@@ -59,7 +59,7 @@ class DPCryptoCompare(DataPuller):
         }
 
         r = requests.get(url_for_request, params=payload)
-        logging.info(r.url)
+        logging.info(str(datetime.datetime.now()) + ' ' + r.url)
 
         return self.json_data_obtain(url=url_for_request, param=payload)
 

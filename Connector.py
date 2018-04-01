@@ -14,6 +14,7 @@ class Connector:
             logging.info('Try to get database ' + db_name + ' params...')
             # read connection parameter
             params = config(db_name)
+            print(params)
             # connect to the PostgreSQL server
             logging.info('Try to connect to database ' + db_name)
             self.conn = psycopg2.connect(**params)
