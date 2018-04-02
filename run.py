@@ -18,7 +18,7 @@ if __name__ == '__main__':
     conn = Connector('prosphero')  # set connection to database
 
     CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
-    CC_schema.insert_current_price(source_coin='USD,BTC,ETH')
+    CC_schema.insert_current_price(target_coin='USD,BTC,ETH')
 
     conn.close()
 

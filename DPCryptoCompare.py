@@ -16,6 +16,7 @@ class DPCryptoCompare(DataPuller):
         self.url_pricemultifull = 'https://min-api.cryptocompare.com/data/pricemultifull'
         self.url_generate_avg = 'https://min-api.cryptocompare.com/data/generateAvg'
         self.url_price_historical = 'https://min-api.cryptocompare.com/data/pricehistorical'
+        self.url_exchange = 'https://min-api.cryptocompare.com/data/all/exchanges'
 
     def get_coin_info(self):
         """
@@ -23,6 +24,10 @@ class DPCryptoCompare(DataPuller):
         Get coin list example https://www.cryptocompare.com/api/data/coinlist/
         """
         return self.json_data_obtain(self.url_coin)['Data']
+
+    def get_exchange_info(self):
+        """Returns all the exchanges that CryptoCompare has integrated with."""
+        return self.json_data_obtain(self.url_exchange)
 
     def get_coin_price(self, from_currency='BTC', to_currency='KICK,USD,ETH', exchange=None, multiprice=False,
                        full=False, avg=None, date=None):

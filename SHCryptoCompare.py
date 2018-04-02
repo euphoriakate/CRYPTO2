@@ -10,6 +10,7 @@ class SHCryptoCompare:
         self.schema = 'cryptocompare'
         self.coin_table = 'coin'
         self.price_table = 'price'
+        self.exchange_table = 'exchange'
         self.data_puller = data_puller
         self.max_tsyms_elem = 10
 
@@ -21,7 +22,7 @@ class SHCryptoCompare:
         columns = ('source_coin', 'target_coin', 'price')
         return self.conn.insert(self.schema, self.price_table, columns, rows)
 
-    def insert_current_price(self, source_coin='BTC,USD'):
+    def insert_current_price(self, target_coin='BTC,USD'):
 
         coin_list = self.get_all_coins()  # load all coins codes from table with coins within this schema
         logging.info([coin[0] for coin in coin_list])
@@ -38,7 +39,7 @@ class SHCryptoCompare:
         price_dict = []  # dictionary source_coin, target coin, price
         # filling dictionary price_dict
         for tsyms in tsyms_list:
-            data = self.data_puller.get_coin_pricemulti(from_currency=source_coin, to_currency=tsyms)
+            data = self.data_puller.get_coin_pricemulti(from_currency=tsyms, to_currency=target_coin)
             price_dict.append(data)
 
         rows = ()
@@ -49,3 +50,19 @@ class SHCryptoCompare:
                     row = (source_coin_cd, target_coin_cd, price)
                     rows = rows + (row,)
         self.insert_price(rows)
+
+    def insert_exchange(self):
+        columns = ('exchange_name', 'source_coin', 'target_coin')
+
+        exchange_json = self.data_puller.get_exchange_info()
+
+        rows = ()
+        for exchange in exchange_json:
+            for source_coin in exchange_json[exchange]:
+                for target_coin in exchange_json[exchange][source_coin]:
+                    row = (exchange, source_coin, target_coin)
+                    if len(source_coin) >= 64 or len(target_coin) >= 64:
+                        print(row)
+                    rows = rows + (row,)
+        #print(rows)
+        self.conn.insert(self.schema, self.exchange_table, columns, rows)

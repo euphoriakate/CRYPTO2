@@ -31,6 +31,7 @@ class Connector:
         args_str = b','.join(self.cur.mogrify('(%s,%s,%s)', x) for x in data).decode()
         sql = 'INSERT INTO ' + schema + '.' + table + '(' + columns_name + """)
                          VALUES """ + args_str
+        print(sql)
         try:
             logging.info('Try to execute script')
             logging.info(sql)
