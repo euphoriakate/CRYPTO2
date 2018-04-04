@@ -19,6 +19,7 @@ if __name__ == '__main__':
 
     CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
     CC_schema.insert_current_price(target_coin='USD,BTC,ETH')
+    # CC_schema.insert_exchange()
 
     conn.close()
 

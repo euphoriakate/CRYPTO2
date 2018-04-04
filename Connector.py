@@ -44,7 +44,7 @@ class Connector:
 
     def select(self, schema, table, columns=None):
         if columns is not None:
-            columns_to_select = ''.join(columns)
+            columns_to_select = ','.join(columns)
         else:
             columns_to_select = '*'
         sql = 'select ' + columns_to_select + ' from ' + schema + '.' + table

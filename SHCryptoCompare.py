@@ -1,4 +1,6 @@
 import logging
+import json
+from collections import defaultdict
 
 logging.getLogger(__name__)
 
@@ -11,6 +13,7 @@ class SHCryptoCompare:
         self.coin_table = 'coin'
         self.price_table = 'price'
         self.exchange_table = 'exchange'
+        self.exchange_x_coin_table = 'exchange_x_coin'
         self.data_puller = data_puller
         self.max_tsyms_elem = 10
 
@@ -66,3 +69,27 @@ class SHCryptoCompare:
                     rows = rows + (row,)
         #print(rows)
         self.conn.insert(self.schema, self.exchange_table, columns, rows)
+
+    def get_all_exchange_x_coin(self):
+        columns = ['exchange_name', 'source_coin', 'target_coin']
+        return self.conn.select(self.schema, self.exchange_table, columns)
+
+    def insert_exchange_x_coin(self, target_coin='BTC,USD'):
+        exchange_x_coin = self.get_all_exchange_x_coin()  # return list of tuples
+
+        exchange_x_coin_json = defaultdict(dict)
+
+        for row in exchange_x_coin:
+            print(row)
+            print(exchange_x_coin_json)
+            print(r'\n\n\n')
+
+            # exchange_x_coin_json[row[0]][row[2]].append(row[1])
+
+            if row[2] in exchange_x_coin_json[row[0]].keys():
+                exchange_x_coin_json[row[0]][row[2]].append(row[1])
+            else:
+                exchange_x_coin_json[row[0]][row[2]] = [row[1]]
+
+        return exchange_x_coin_json
+
