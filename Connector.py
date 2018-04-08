@@ -28,7 +28,8 @@ class Connector:
     def insert(self, schema, table, columns, data):
         """ insert a new vendor into the vendors table """
         columns_name = ','.join([str(x) for x in columns])
-        args_str = b','.join(self.cur.mogrify('(%s,%s,%s)', x) for x in data).decode()
+        pattern_string = ','.join(['%s' for x in columns])
+        args_str = b','.join(self.cur.mogrify('('+pattern_string+')', x) for x in data).decode()
         sql = 'INSERT INTO ' + schema + '.' + table + '(' + columns_name + """)
                          VALUES """ + args_str
         print(sql)

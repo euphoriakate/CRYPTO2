@@ -1,6 +1,6 @@
 import logging
-import json
 from collections import defaultdict
+import datetime
 
 logging.getLogger(__name__)
 
@@ -10,6 +10,7 @@ class SHCryptoCompare:
     def __init__(self, conn, data_puller=None):
         self.conn = conn
         self.schema = 'cryptocompare'
+        self.schema_last_value = 'public'
         self.coin_table = 'coin'
         self.price_table = 'price'
         self.exchange_table = 'exchange'
@@ -32,9 +33,8 @@ class SHCryptoCompare:
         j = 0
         tsyms_list = []  # dictionary with short coin list elements for insert to API url
         # filling dictionary tsyms_list
-        while j <= len(coin_list):
-
-            last_cycle_elem = min(j+self.max_tsyms_elem, len(coin_list))
+        while j < len(coin_list):
+            last_cycle_elem = min(j + self.max_tsyms_elem, len(coin_list))
             tsyms = ','.join([str(x[0]) for x in coin_list[j:last_cycle_elem]])
             j += self.max_tsyms_elem
             tsyms_list.append(tsyms)
@@ -64,32 +64,95 @@ class SHCryptoCompare:
             for source_coin in exchange_json[exchange]:
                 for target_coin in exchange_json[exchange][source_coin]:
                     row = (exchange, source_coin, target_coin)
-                    if len(source_coin) >= 64 or len(target_coin) >= 64:
-                        print(row)
                     rows = rows + (row,)
-        #print(rows)
+
         self.conn.insert(self.schema, self.exchange_table, columns, rows)
 
     def get_all_exchange_x_coin(self):
         columns = ['exchange_name', 'source_coin', 'target_coin']
-        return self.conn.select(self.schema, self.exchange_table, columns)
+        return self.conn.select(self.schema_last_value, self.exchange_table, columns)
 
-    def insert_exchange_x_coin(self, target_coin='BTC,USD'):
+    def insert_exchange_x_coin(self):
         exchange_x_coin = self.get_all_exchange_x_coin()  # return list of tuples
 
         exchange_x_coin_json = defaultdict(dict)
 
         for row in exchange_x_coin:
-            print(row)
-            print(exchange_x_coin_json)
-            print(r'\n\n\n')
-
-            # exchange_x_coin_json[row[0]][row[2]].append(row[1])
-
             if row[2] in exchange_x_coin_json[row[0]].keys():
                 exchange_x_coin_json[row[0]][row[2]].append(row[1])
             else:
                 exchange_x_coin_json[row[0]][row[2]] = [row[1]]
 
-        return exchange_x_coin_json
+        columns = (
+            'exchange_name',
+            'source_coin',
+            'target_coin',
+            'change24hour',
+            'change_day',
+            'change_pct24hour',
+            'change_pct_day',
+            'flags',
+            'high24hour',
+            'last_trade_id',
+            'last_update',
+            'last_volume',
+            'last_volume_to',
+            'low24hour',
+            'market_cap',
+            'open24hour',
+            'price',
+            'supply',
+            'total_volume24h',
+            'total_volume_24h_to',
+            'type',
+            'volume_24_hour',
+            'volume_24_hour_to'
+        )
 
+        for exchange_name, coins in exchange_x_coin_json.items():
+            fsyms_list = []
+            for source_coin, target_coin_list in coins.items():
+                j = 0
+                while j < len(target_coin_list):
+                    last_cycle_elem = min(j + self.max_tsyms_elem, len(target_coin_list))
+                    fsyms = ','.join([x for x in target_coin_list[j:last_cycle_elem]])
+                    j += self.max_tsyms_elem
+                    fsyms_list.append(fsyms)
+
+                    dat = self.data_puller.get_coin_pricemultifull(from_currency=fsyms, to_currency=source_coin,
+                                                                   exchange=exchange_name)
+
+                    rows = ()
+
+                    for s_coin, t_coin_dict in dat.items():
+                        for t_coin, attribute_dict in t_coin_dict.items():
+                            row = (
+                                attribute_dict['MARKET'],
+                                attribute_dict['FROMSYMBOL'],
+                                attribute_dict['TOSYMBOL'],
+                                attribute_dict['CHANGE24HOUR'],
+                                attribute_dict['CHANGEDAY'],
+                                attribute_dict['CHANGEPCT24HOUR'],
+                                attribute_dict['CHANGEPCTDAY'],
+                                attribute_dict['FLAGS'],
+                                attribute_dict['HIGH24HOUR'],
+                                attribute_dict['LASTTRADEID'],
+                                datetime.datetime.utcfromtimestamp(attribute_dict['LASTUPDATE']).strftime(
+                                    '%Y-%m-%dT%H:%M:%S'),
+                                attribute_dict['LASTVOLUME'],
+                                attribute_dict['LASTVOLUMETO'],
+                                attribute_dict['LOW24HOUR'],
+                                attribute_dict['MKTCAP'],
+                                attribute_dict['OPEN24HOUR'],
+                                attribute_dict['PRICE'],
+                                attribute_dict['SUPPLY'],
+                                attribute_dict['TOTALVOLUME24H'],
+                                attribute_dict['TOTALVOLUME24HTO'],
+                                attribute_dict['TYPE'],
+                                attribute_dict['VOLUME24HOUR'],
+                                attribute_dict['VOLUME24HOURTO']
+                            )
+                            rows = rows + (row,)
+
+                    self.conn.insert(schema='cryptocompare', table='exchange_x_coin2',
+                                     columns=columns, data=rows)

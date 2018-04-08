@@ -96,7 +96,7 @@ class DPCryptoCompare(DataPuller):
                     https://min-api.cryptocompare.com/data/pricemultifull?fsyms=REP,ETH,DASH&tsyms=BTC,USD,EUR,XMR&e=Coinbase
                     https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC,ETH&tsyms=USD
         """
-        return self.get_coin_price(from_currency, to_currency, exchange, multiprice=True, full=True)
+        return self.get_coin_price(from_currency, to_currency, exchange, multiprice=True, full=True)['RAW']
 
     def get_avg(self, from_currency='BTC', to_currency='USD', exchange='Bitfinex'):
         """
