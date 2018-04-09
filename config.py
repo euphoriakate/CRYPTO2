@@ -8,7 +8,7 @@ logging.getLogger(__name__)
 
 
 def config(section):
-    filename = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/database.ini'
+    filename = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/configuration.ini'
     # create a parser
     parser = ConfigParser()
     # read config file
