@@ -13,13 +13,13 @@ class DPSEMRush(DataPuller):
         self.url_price = 'https://min-api.cryptocompare.com/data/price'
         self.api_key = '935b97f54ac6b811e379181d53814bcb'
 
-    def get_url_attendance(self):
+    def get_url_attendance(self, domain):
 
         payload = {
                     'key': self.api_key,
                     'type': 'domain_ranks',
                     'export_columns': 'Dt,Db,Dn,Rk,Ot,At',
-                    'domain': 'seobook.com',
+                    'domain': domain #'seobook.com',
                     #'database': 'us,se'
                    }
 

@@ -29,6 +29,8 @@ class Connector:
         """ insert a new vendor into the vendors table """
         columns_name = ','.join([str(x) for x in columns])
         pattern_string = ','.join(['%s' for x in columns])
+        print(columns_name)
+        print(pattern_string)
         args_str = b','.join(self.cur.mogrify('('+pattern_string+')', x) for x in data).decode()
         sql = 'INSERT INTO ' + schema + '.' + table + '(' + columns_name + """)
                          VALUES """ + args_str
