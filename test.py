@@ -1,6 +1,8 @@
 from DPSEMrush import DPSEMRush
 from Connector import Connector
 import pprint
+from DPCryptoCompare import DPCryptoCompare
+from SHCryptoCompare import SHCryptoCompare
 
 from datetime import datetime
 
@@ -31,7 +33,7 @@ exchange_list = [
 ]
 
 if __name__ == '__main__':
-
+    '''
     SEMRush_dp = DPSEMRush()
 
     for exc in exchange_list:
@@ -50,4 +52,19 @@ if __name__ == '__main__':
         col = ('report_date', 'country','domain', 'rank', 'organic_traffic', 'adwords_traffic')
         conn.insert('cryptocompare', 'exchange_attendance', col, rows)
         conn.close()
+    '''
+
+    conn = Connector('prosphero')  # set connection to database
+
+    CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
+    #CC_schema.insert_exchange()
+
+
+
+    ''' insert actual exchange - trade pair info. This step is necessary before insert_exchange_x_coin step,
+        because after we need to write explicity actual pair in api request'''
+
+    CC_schema.insert_exchange_x_coin(exchange_list='CCCAGG')
+
+    conn.close()
 

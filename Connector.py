@@ -45,12 +45,12 @@ class Connector:
         except (Exception, psycopg2.DatabaseError) as error:
             logging.error(error)
 
-    def select(self, schema, table, columns=None):
+    def select(self, schema, table, columns=None, where=''):
         if columns is not None:
             columns_to_select = ','.join(columns)
         else:
             columns_to_select = '*'
-        sql = 'select ' + columns_to_select + ' from ' + schema + '.' + table
+        sql = 'select ' + columns_to_select + ' from ' + schema + '.' + table + ' ' + where
         logging.info(sql)
         try:
             self.cur.execute(sql)

@@ -80,7 +80,7 @@
     </role>
     <schema id="12" parent="2" name="public">
       <ObjectId>2200</ObjectId>
-      <IntrospectionTimestamp>2018-04-12.13:30:08.908</IntrospectionTimestamp>
+      <IntrospectionTimestamp>2018-04-12.19:41:46.432</IntrospectionTimestamp>
       <IntrospectionStateNumber>5127592</IntrospectionStateNumber>
       <Current>1</Current>
       <Visible>1</Visible>
@@ -102,7 +102,7 @@
     </schema>
     <schema id="18" parent="2" name="cryptocompare">
       <ObjectId>16391</ObjectId>
-      <IntrospectionTimestamp>2018-04-12.13:30:08.908</IntrospectionTimestamp>
+      <IntrospectionTimestamp>2018-04-12.19:41:46.432</IntrospectionTimestamp>
       <IntrospectionStateNumber>3189903</IntrospectionStateNumber>
       <Visible>1</Visible>
     </schema>
@@ -220,46 +220,55 @@ format=csv</Options>
       <Position>1</Position>
       <DataType>text|0</DataType>
       <StateNumber>5127214</StateNumber>
+      <TypeId>25</TypeId>
     </column>
     <column id="43" parent="27" name="price">
       <Position>2</Position>
       <DataType>integer|0</DataType>
       <StateNumber>5127214</StateNumber>
+      <TypeId>23</TypeId>
     </column>
     <column id="44" parent="27" name="date">
       <Position>3</Position>
       <DataType>timestamp|0</DataType>
       <StateNumber>5127214</StateNumber>
+      <TypeId>1114</TypeId>
     </column>
     <column id="45" parent="28" name="ticker">
       <Position>1</Position>
       <DataType>varchar(8)|0</DataType>
       <StateNumber>5125820</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="46" parent="28" name="price">
       <Position>2</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>5125820</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="47" parent="28" name="quantity">
       <Position>3</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>5125820</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="48" parent="28" name="marketcenter">
       <Position>4</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>5125820</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="49" parent="29" name="name">
       <Position>1</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>5127592</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="50" parent="29" name="url">
       <Position>2</Position>
       <DataType>varchar(64)|0</DataType>
       <StateNumber>5127592</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="51" parent="30" name="id">
       <Position>1</Position>
@@ -544,36 +553,43 @@ valid_from_dttm</ColNames>
       <DataType>timestamp|0</DataType>
       <StateNumber>2811805</StateNumber>
       <DefaultExpression>now()</DefaultExpression>
+      <TypeId>1114</TypeId>
     </column>
     <column id="107" parent="38" name="report_date">
       <Position>2</Position>
       <DataType>timestamp|0</DataType>
       <StateNumber>2811805</StateNumber>
+      <TypeId>1114</TypeId>
     </column>
     <column id="108" parent="38" name="country">
       <Position>3</Position>
       <DataType>varchar(16)|0</DataType>
       <StateNumber>2811805</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="109" parent="38" name="domain">
       <Position>4</Position>
       <DataType>varchar(32)|0</DataType>
       <StateNumber>2811805</StateNumber>
+      <TypeId>1043</TypeId>
     </column>
     <column id="110" parent="38" name="rank">
       <Position>5</Position>
       <DataType>integer|0</DataType>
       <StateNumber>2811805</StateNumber>
+      <TypeId>23</TypeId>
     </column>
     <column id="111" parent="38" name="organic_traffic">
       <Position>6</Position>
       <DataType>integer|0</DataType>
       <StateNumber>2811805</StateNumber>
+      <TypeId>23</TypeId>
     </column>
     <column id="112" parent="38" name="adwords_traffic">
       <Position>7</Position>
       <DataType>integer|0</DataType>
       <StateNumber>2811805</StateNumber>
+      <TypeId>23</TypeId>
     </column>
     <column id="113" parent="39" name="valid_from_dttm">
       <Position>1</Position>

@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 import datetime
+import pprint
 
 logging.getLogger(__name__)
 
@@ -59,21 +60,37 @@ class SHCryptoCompare:
 
         exchange_json = self.data_puller.get_exchange_info()
 
+        tuple_list = []
+
         rows = ()
         for exchange in exchange_json:
             for source_coin in exchange_json[exchange]:
                 for target_coin in exchange_json[exchange][source_coin]:
+                    tuple_list.append((source_coin, target_coin))
                     row = (exchange, source_coin, target_coin)
                     rows = rows + (row,)
 
-        self.conn.insert(self.schema, self.exchange_table, columns, rows)
+        """
+        need to manually add all possible pairs source coin, target coin with CCCAGG
+        for easy load aggregate full information in insert_exchange_x_coin function
+        """
 
-    def get_all_exchange_x_coin(self):
+        tuple_set = set(tuple_list)
+        manual_rows = [('CCCAGG',) + element for element in tuple_set]
+        rows_all = rows + tuple(manual_rows)
+
+        self.conn.insert(self.schema, self.exchange_table, columns, rows_all)
+
+    def get_all_exchange_x_coin(self, exchange_list=None):
         columns = ['exchange_name', 'source_coin', 'target_coin']
-        return self.conn.select(self.schema_last_value, self.exchange_table, columns)
+        where = ''
+        if exchange_list is not None:
+            where = 'where exchange_name = \'' + exchange_list + '\''
+        return self.conn.select(self.schema_last_value, self.exchange_table, columns, where)
 
-    def insert_exchange_x_coin(self):
-        exchange_x_coin = self.get_all_exchange_x_coin()  # return list of tuples
+    def insert_exchange_x_coin(self, exchange_list=None):
+        exchange_x_coin = self.get_all_exchange_x_coin(exchange_list)  # return list of tuples
+        pprint.pprint(exchange_x_coin)
 
         exchange_x_coin_json = defaultdict(dict)
 
@@ -153,6 +170,10 @@ class SHCryptoCompare:
                                 attribute_dict['VOLUME24HOURTO']
                             )
                             rows = rows + (row,)
+                            print(row)
 
-                    self.conn.insert(schema='cryptocompare', table='exchange_x_coin2',
+
+                    self.conn.insert(schema='cryptocompare', table='exchange_x_coin',
                                      columns=columns, data=rows)
+
+        #print.pprint(rows)
