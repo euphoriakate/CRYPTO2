@@ -27,3 +27,5 @@ if __name__ == '__main__':
     CC_schema.insert_exchange_x_coin()
 
     conn.close()
+
+    logging.info(str(datetime.datetime.now()) + ' Program ended an execution.')
