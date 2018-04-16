@@ -46,6 +46,9 @@ class Connector:
             logging.error(error)
 
     def select(self, schema, table, columns=None, where=''):
+
+        if isinstance(columns, str):
+            columns = [columns]
         if columns is not None:
             columns_to_select = ','.join(columns)
         else:

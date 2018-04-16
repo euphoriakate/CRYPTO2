@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict
 import datetime
 import pprint
+import inspect
 
 logging.getLogger(__name__)
 
@@ -16,12 +17,17 @@ class SHCryptoCompare:
         self.price_table = 'price'
         self.exchange_table = 'exchange'
         self.exchange_x_coin_table = 'exchange_x_coin'
+        self.stats_twitter_table = 'coin_x_twitter'
         self.data_puller = data_puller
         self.max_tsyms_elem = 10
+        self.social = ['CryptoCompare', 'Twitter', 'Reddit', 'Facebook', 'CodeRepository']
+        self.coin_ident_type = ['id', 'code']
 
-    def get_all_coins(self):
-        columns = ['code']
-        return self.conn.select(self.schema, self.coin_table, columns)
+    def get_all_coins(self, type):
+        if type in self.coin_ident_type:
+            return self.conn.select(self.schema, self.coin_table, type)
+        else:
+            logging.error('Please call function ' + str(inspect.stack()[0][3]) + ' with proper value in type param ' + str(self.coin_ident_type))
 
     def insert_price(self, rows):
         columns = ('source_coin', 'target_coin', 'price')
@@ -29,7 +35,7 @@ class SHCryptoCompare:
 
     def insert_current_price(self, target_coin='BTC,USD'):
 
-        coin_list = self.get_all_coins()  # load all coins codes from table with coins within this schema
+        coin_list = self.get_all_coins(type='code')  # load all coins codes from table with coins within this schema
         logging.info([coin[0] for coin in coin_list])
         j = 0
         tsyms_list = []  # dictionary with short coin list elements for insert to API url
@@ -176,4 +182,72 @@ class SHCryptoCompare:
                     self.conn.insert(schema='cryptocompare', table='exchange_x_coin',
                                      columns=columns, data=rows)
 
-        #print.pprint(rows)
+    def insert_social_stats(self, social=None):
+
+        if social == None:
+            social = self.social
+        elif isinstance(social,str):
+            social = [social]
+
+        coin_list_tuple = self.get_all_coins('id')
+        coin_id_list = [str(x[0]) for x in coin_list_tuple]
+
+        social_dict = {}
+        new_dict = {}
+
+        for coin_id in coin_id_list:
+            data = self.data_puller.get_social_stats(coin_id)
+            social_dict[coin_id] = data
+
+            for scl in social:
+                if scl not in new_dict.keys():
+                    new_dict[scl] = {coin_id: data[scl]}
+                else:
+                    new_dict[scl][coin_id] = data[scl]
+
+        pprint.pprint(new_dict)
+
+        for scl in social:
+            if scl == 'Twitter':
+                self.insert_coin_x_twitter(new_dict[scl])
+            if scl == 'Reddit':
+                #self.insert_coin_x_reddit(new_dict[scl])
+                pass
+
+    def insert_coin_x_twitter(self, data):
+
+        pprint.pprint('Twitter')
+        columns = ('coin_id',
+                   'followers',
+                   'following',
+                   'favourites',
+                   'statuses',
+                   'points',
+                   'lists',
+                   'account_create_dt',
+                   'account_url')
+
+        rows = ()
+
+        for coin_id, value in data.items():
+            row = (coin_id,
+                   value['followers'],
+                   value['following'],
+                   value['favourites'],
+                   value['statuses'],
+                   value['Points'],
+                   value['lists'],
+                   datetime.datetime.utcfromtimestamp(int(value['account_creation'])).strftime(
+                       '%Y-%m-%dT%H:%M:%S'),
+                   value['link'])
+            rows = rows + (row,)
+
+        return self.conn.insert(schema=self.schema, table=self.stats_twitter_table, columns=columns, data=rows)
+
+    def insert_coin_x_reddit(self, data):
+        pprint.pprint('Reddit')
+        pprint.pprint(data)
+
+
+
+

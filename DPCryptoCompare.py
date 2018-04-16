@@ -17,6 +17,7 @@ class DPCryptoCompare(DataPuller):
         self.url_generate_avg = 'https://min-api.cryptocompare.com/data/generateAvg'
         self.url_price_historical = 'https://min-api.cryptocompare.com/data/pricehistorical'
         self.url_exchange = 'https://min-api.cryptocompare.com/data/all/exchanges'
+        self.url_social = 'https://www.cryptocompare.com/api/data/socialstats/'
 
     def get_coin_info(self):
         """
@@ -131,3 +132,13 @@ class DPCryptoCompare(DataPuller):
         ts = int(datetime.datetime.strptime(date, '%d/%m/%Y').timestamp())
         print(ts)
         return self.get_coin_price(from_currency, to_currency, exchange)
+
+    def get_social_stats(self, currency_id):
+        payload = {
+                    'id': currency_id
+                    }
+
+        r = requests.get(self.url_social, params=payload)
+        logging.info(str(datetime.datetime.now()) + ' ' + r.url)
+
+        return self.json_data_obtain(url=self.url_social, param=payload)['Data']
