@@ -137,7 +137,7 @@ class DPCryptoCompare(DataPuller):
         payload = {
                     'id': currency_id
                     }
-        
+
         r = requests.get(self.url_social, params=payload)
         logging.info(str(datetime.datetime.now()) + ' ' + r.url)
 

@@ -51,7 +51,7 @@ class SHSemrush:
 
             for i in range(1, rows_count):
                 list_of_row_values = data.split('\n')[i].strip().split(';')
-                list_of_row_values[0] = str(datetime.strptime(list_of_row_values[0], '%Y%m%d'))
+                list_of_row_values[0] = str(datetime.datetime.strptime(str(list_of_row_values[0]), '%Y%m%d'))
                 row = tuple(list_of_row_values)
                 rows_to_insert = rows_to_insert + (row,)
 
