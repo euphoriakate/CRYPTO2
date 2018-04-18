@@ -12,8 +12,6 @@ import pprint
 
 if __name__ == '__main__':
 
-    # CC_schema.insert_exchange_x_coin(exchange_list='CCCAGG')
-
     import logging
     logging.basicConfig(filename=os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/prosphero.log',
                         level=logging.DEBUG,
@@ -26,9 +24,6 @@ if __name__ == '__main__':
 
     CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
     CC_schema.insert_social_stats(social=['Twitter','Reddit'])
-    #pprint.pprint(val)
-    #CC_schema.get_all_coins(type='iuy')
-
 
     conn.close()
 

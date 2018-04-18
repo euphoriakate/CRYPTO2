@@ -3,6 +3,7 @@ from collections import defaultdict
 import datetime
 import pprint
 import inspect
+import multiprocessing
 
 logging.getLogger(__name__)
 
@@ -195,15 +196,21 @@ class SHCryptoCompare:
         social_dict = {}
         new_dict = {}
 
-        for coin_id in coin_id_list:
-            data = self.data_puller.get_social_stats(coin_id)
-            social_dict[coin_id] = data
+        # coin_id_list = coin_id_list[0:50]
 
+        with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
+            data = p.map(self.data_puller.get_social_stats, coin_id_list)
+
+        new_dict = {}
+
+        for num, coin_id in enumerate(coin_id_list):
+            print(num, coin_id)
+            social_dict[coin_id] = data[num]
             for scl in social:
                 if scl not in new_dict.keys():
-                    new_dict[scl] = {coin_id: data[scl]}
+                    new_dict[scl] = {coin_id: data[num][scl]}
                 else:
-                    new_dict[scl][coin_id] = data[scl]
+                    new_dict[scl][coin_id] = data[num][scl]
 
         pprint.pprint(new_dict)
 
@@ -229,20 +236,24 @@ class SHCryptoCompare:
 
         rows = ()
 
-        for coin_id, value in data.items():
-            row = (coin_id,
-                   value['followers'],
-                   value['following'],
-                   value['favourites'],
-                   value['statuses'],
-                   value['Points'],
-                   value['lists'],
-                   datetime.datetime.utcfromtimestamp(int(value['account_creation'])).strftime(
-                       '%Y-%m-%dT%H:%M:%S'),
-                   value['link'])
-            rows = rows + (row,)
+        key_values = ('followers', 'following', 'favourites', 'statuses', 'Points', 'lists', 'account_creation', 'link')
 
-        return self.conn.insert(schema=self.schema, table=self.stats_twitter_table, columns=columns, data=rows)
+        for coin_id, value in data.items():
+            row = tuple((str(coin_id),))
+            for key_value in key_values:
+                add_to_row = None
+                if key_value in value.keys():
+                    if key_value == 'account_creation':
+                        add_to_row = datetime.datetime.utcfromtimestamp(int(value[key_value])).strftime('%Y-%m-%dT%H:%M:%S')
+                    else:
+                        add_to_row = value[key_value]
+                row = row + (add_to_row,)
+
+            print(row)
+            self.conn.insert(schema=self.schema, table=self.stats_twitter_table, columns=columns, data=(row,))
+            #rows = rows + (row,)
+
+        #return self.conn.insert(schema=self.schema, table=self.stats_twitter_table, columns=columns, data=rows)
 
     def insert_coin_x_reddit(self, data):
         pprint.pprint('Reddit')

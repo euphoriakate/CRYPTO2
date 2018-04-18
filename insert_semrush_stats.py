@@ -9,8 +9,6 @@ import datetime
 
 if __name__ == '__main__':
 
-    # CC_schema.insert_exchange_x_coin(exchange_list='CCCAGG')
-
     import logging
     logging.basicConfig(filename=os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/prosphero.log',
                         level=logging.DEBUG,
