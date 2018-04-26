@@ -19,6 +19,8 @@ class SHCryptoCompare:
         self.exchange_table = 'exchange'
         self.exchange_x_coin_table = 'exchange_x_coin'
         self.stats_twitter_table = 'coin_x_twitter'
+        self.stats_reddit_table = 'coin_x_reddit'
+        self.stats_facebook_table = 'coin_x_facebook'
         self.data_puller = data_puller
         self.max_tsyms_elem = 10
         self.social = ['CryptoCompare', 'Twitter', 'Reddit', 'Facebook', 'CodeRepository']
@@ -184,23 +186,19 @@ class SHCryptoCompare:
                                      columns=columns, data=rows)
 
     def insert_social_stats(self, social=None):
-
         if social == None:
             social = self.social
         elif isinstance(social,str):
             social = [social]
-
         coin_list_tuple = self.get_all_coins('id')
         coin_id_list = [str(x[0]) for x in coin_list_tuple]
-
         social_dict = {}
         new_dict = {}
 
-        # coin_id_list = coin_id_list[0:50]
+        coin_id_list = [1182] #, 3808] # coin_id_list[0:5]
 
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
             data = p.map(self.data_puller.get_social_stats, coin_id_list)
-
         new_dict = {}
 
         for num, coin_id in enumerate(coin_id_list):
@@ -212,14 +210,15 @@ class SHCryptoCompare:
                 else:
                     new_dict[scl][coin_id] = data[num][scl]
 
-        pprint.pprint(new_dict)
-
         for scl in social:
             if scl == 'Twitter':
                 self.insert_coin_x_twitter(new_dict[scl])
             if scl == 'Reddit':
-                #self.insert_coin_x_reddit(new_dict[scl])
-                pass
+                self.insert_coin_x_reddit(new_dict[scl])
+            if scl == 'Facebook':
+                self.insert_coin_x_facebook(new_dict[scl])
+            if scl == 'CodeRepository':
+                self.insert_coin_x_coderepository(new_dict[scl])
 
     def insert_coin_x_twitter(self, data):
 
@@ -244,7 +243,10 @@ class SHCryptoCompare:
                 add_to_row = None
                 if key_value in value.keys():
                     if key_value == 'account_creation':
-                        add_to_row = datetime.datetime.utcfromtimestamp(int(value[key_value])).strftime('%Y-%m-%dT%H:%M:%S')
+                        if value[key_value] == 'undefined':
+                            add_to_row = None
+                        else:
+                            add_to_row = datetime.datetime.utcfromtimestamp(int(value[key_value])).strftime('%Y-%m-%dT%H:%M:%S')
                     else:
                         add_to_row = value[key_value]
                 row = row + (add_to_row,)
@@ -257,8 +259,93 @@ class SHCryptoCompare:
 
     def insert_coin_x_reddit(self, data):
         pprint.pprint('Reddit')
+        columns = ('coin_id',
+                   'subscribers',
+                   'active_users',
+                   'posts_per_day',
+                   'posts_per_hour',
+                   'comments_per_day',
+                   'comments_per_hour',
+                   'community_creation_dt',
+                   'link',
+                   'points')
+
+        rows = ()
+
+        key_values = ('subscribers', 'active_users', 'posts_per_day', 'posts_per_hour', 'comments_per_day', 'comments_per_hour', 'community_creation', 'link', 'Points')
+
+        for coin_id, value in data.items():
+            row = tuple((str(coin_id),))
+            for key_value in key_values:
+                add_to_row = None
+                if key_value in value.keys():
+                    if key_value == 'community_creation':
+                        if value[key_value] == 'undefined':
+                            add_to_row = None
+                        else:
+                            add_to_row = datetime.datetime.utcfromtimestamp(int(value[key_value])).strftime('%Y-%m-%dT%H:%M:%S')
+                    else:
+                        add_to_row = value[key_value]
+                row = row + (add_to_row,)
+
+            print(row)
+            self.conn.insert(schema=self.schema, table=self.stats_reddit_table, columns=columns, data=(row,))
+
+    def insert_coin_x_facebook(self, data):
+        pprint.pprint('Facebook')
         pprint.pprint(data)
 
+
+        columns = ('coin_id',
+                   'likes',
+                   'talking_about',
+                   'is_closed',
+                   'link',
+                   'points'
+                   )
+
+        rows = ()
+
+        key_values = ('likes', 'talking_about', 'is_closed', 'link', 'Points')
+
+        for coin_id, value in data.items():
+            row = tuple((str(coin_id),))
+            for key_value in key_values:
+                add_to_row = None
+                if key_value in value.keys():
+                    add_to_row = value[key_value]
+                row = row + (add_to_row,)
+
+            print(row)
+            self.conn.insert(schema=self.schema, table=self.stats_facebook_table, columns=columns, data=(row,))
+
+    def insert_coin_x_coderepository(self, data):
+        pprint.pprint('CodeRepository')
+        pprint.pprint(data)
+        '''
+        columns = ('coin_id',
+                   'likes',
+                   'talking_about',
+                   'is_closed',
+                   'link',
+                   'points'
+                   )
+
+        rows = ()
+
+        key_values = ('likes', 'talking_about', 'is_closed', 'link', 'Points')
+
+        for coin_id, value in data.items():
+            row = tuple((str(coin_id),))
+            for key_value in key_values:
+                add_to_row = None
+                if key_value in value.keys():
+                    add_to_row = value[key_value]
+                row = row + (add_to_row,)
+
+            print(row)
+            self.conn.insert(schema=self.schema, table=self.stats_facebook_table, columns=columns, data=(row,))
+        '''
 
 
 
