@@ -196,7 +196,7 @@ class SHCryptoCompare:
         social_dict = {}
         new_dict = {}
 
-        coin_id_list = [1182, 3808] # coin_id_list[0:5]
+        #coin_id_list = coin_id_list[0:50] #[339419] # [1182, 3808] # coin_id_list[0:5]
 
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
             data = p.map(self.data_puller.get_social_stats, coin_id_list)
@@ -322,7 +322,6 @@ class SHCryptoCompare:
 
     def insert_coin_x_coderepository(self, data):
         pprint.pprint('CodeRepository')
-        pprint.pprint(data)
 
         columns = (
                           'coin_id'
@@ -350,14 +349,15 @@ class SHCryptoCompare:
                         , 'source_internal_url'
                     )
 
+
         rows = ()
 
         key_values = (
                      'url'
                     ,'language'
-                    ,'created_dt'
-                    ,'last_push_dt'
-                    ,'last_update_dt'
+                    ,'created_at'
+                    ,'last_push'
+                    ,'last_update'
                     ,'subscribers'
                     ,'stars'
                     ,'size'
@@ -369,25 +369,44 @@ class SHCryptoCompare:
                     ,'closed_total_issues'
                     ,'fork'
                     ,'forks'
-                    ,'parent_internal_id'
-                    ,'parent_internal_name'
-                    ,'parent_internal_url'
-                    ,'source_internal_id'
-                    ,'source_internal_name'
-                    ,'source_internal_url'
+                    ,'parent'
+                    ,'source'
                                )
 
+        key_parent_source = ('InternalId', 'Name', 'Url')
+        columns_date = ( 'created_at'
+                        ,'last_push'
+                        ,'last_update')
+
         for coin_id, value in data.items():
-            row = tuple((str(coin_id),))
-            print(coin_id, value['List'], row)
-            for key_value in key_values:
+            print(coin_id, value)
+            for elem in value['List']:
+                row = tuple((str(coin_id),))
                 add_to_row = None
-                for elem in value['List']:
+                for key_value in key_values:
                     if key_value in elem.keys():
-                        add_to_row = elem[key_value]
-                    row = row + (add_to_row,)
-                    print(row)
-                    self.conn.insert(schema=self.schema, table=self.stats_coderepository_table, columns=columns, data=(row,))
+                        if isinstance(elem[key_value], dict):
+                            subrow = ()
+                            for key_ps in key_parent_source:
+                                add_to_row = elem[key_value][key_ps]
+                                row = row + (add_to_row,)
+                        elif key_value in columns_date:
+                            if elem[key_value] == 'NaN':
+                                add_to_row = None
+                            else:
+                                add_to_row = datetime.datetime.utcfromtimestamp(int(elem[key_value])).strftime('%Y-%m-%dT%H:%M:%S')
+                            row = row + (add_to_row,)
+                        elif elem[key_value] == 'undefined':
+                            add_to_row = None
+                            row = row + (add_to_row,)
+                        else:
+                            add_to_row = elem[key_value]
+                            row = row + (add_to_row,)
+                    else:
+                        add_to_row = None
+                        row = row + (add_to_row,)
+                print(row)
+                self.conn.insert(schema=self.schema, table=self.stats_coderepository_table, columns=columns, data=(row,))
 
 
 
