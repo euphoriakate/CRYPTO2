@@ -21,6 +21,7 @@ class SHCryptoCompare:
         self.stats_twitter_table = 'coin_x_twitter'
         self.stats_reddit_table = 'coin_x_reddit'
         self.stats_facebook_table = 'coin_x_facebook'
+        self.stats_coderepository_table = 'coin_x_coderepository'
         self.data_puller = data_puller
         self.max_tsyms_elem = 10
         self.social = ['CryptoCompare', 'Twitter', 'Reddit', 'Facebook', 'CodeRepository']
@@ -195,7 +196,7 @@ class SHCryptoCompare:
         social_dict = {}
         new_dict = {}
 
-        coin_id_list = [1182] #, 3808] # coin_id_list[0:5]
+        coin_id_list = [1182, 3808] # coin_id_list[0:5]
 
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
             data = p.map(self.data_puller.get_social_stats, coin_id_list)
@@ -322,30 +323,72 @@ class SHCryptoCompare:
     def insert_coin_x_coderepository(self, data):
         pprint.pprint('CodeRepository')
         pprint.pprint(data)
-        '''
-        columns = ('coin_id',
-                   'likes',
-                   'talking_about',
-                   'is_closed',
-                   'link',
-                   'points'
-                   )
+
+        columns = (
+                          'coin_id'
+                        , 'url'
+                        , 'language'
+                        , 'created_dt'
+                        , 'last_push_dt'
+                        , 'last_update_dt'
+                        , 'subscribers'
+                        , 'stars'
+                        , 'size'
+                        , 'open_issues'
+                        , 'open_pull_issues'
+                        , 'open_total_issues'
+                        , 'closed_issues'
+                        , 'closed_pull_issues'
+                        , 'closed_total_issues'
+                        , 'fork'
+                        , 'forks'
+                        , 'parent_internal_id'
+                        , 'parent_internal_name'
+                        , 'parent_internal_url'
+                        , 'source_internal_id'
+                        , 'source_internal_name'
+                        , 'source_internal_url'
+                    )
 
         rows = ()
 
-        key_values = ('likes', 'talking_about', 'is_closed', 'link', 'Points')
+        key_values = (
+                     'url'
+                    ,'language'
+                    ,'created_dt'
+                    ,'last_push_dt'
+                    ,'last_update_dt'
+                    ,'subscribers'
+                    ,'stars'
+                    ,'size'
+                    ,'open_issues'
+                    ,'open_pull_issues'
+                    ,'open_total_issues'
+                    ,'closed_issues'
+                    ,'closed_pull_issues'
+                    ,'closed_total_issues'
+                    ,'fork'
+                    ,'forks'
+                    ,'parent_internal_id'
+                    ,'parent_internal_name'
+                    ,'parent_internal_url'
+                    ,'source_internal_id'
+                    ,'source_internal_name'
+                    ,'source_internal_url'
+                               )
 
         for coin_id, value in data.items():
             row = tuple((str(coin_id),))
+            print(coin_id, value['List'], row)
             for key_value in key_values:
                 add_to_row = None
-                if key_value in value.keys():
-                    add_to_row = value[key_value]
-                row = row + (add_to_row,)
+                for elem in value['List']:
+                    if key_value in elem.keys():
+                        add_to_row = elem[key_value]
+                    row = row + (add_to_row,)
+                    print(row)
+                    self.conn.insert(schema=self.schema, table=self.stats_coderepository_table, columns=columns, data=(row,))
 
-            print(row)
-            self.conn.insert(schema=self.schema, table=self.stats_facebook_table, columns=columns, data=(row,))
-        '''
 
 
 
