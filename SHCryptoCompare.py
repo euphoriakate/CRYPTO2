@@ -22,6 +22,7 @@ class SHCryptoCompare:
         self.stats_reddit_table = 'coin_x_reddit'
         self.stats_facebook_table = 'coin_x_facebook'
         self.stats_coderepository_table = 'coin_x_coderepository'
+        self.stats_cryptocompare_table = 'coin_x_cryptocompare'
         self.data_puller = data_puller
         self.max_tsyms_elem = 10
         self.social = ['CryptoCompare', 'Twitter', 'Reddit', 'Facebook', 'CodeRepository']
@@ -196,8 +197,7 @@ class SHCryptoCompare:
         social_dict = {}
         new_dict = {}
 
-        #coin_id_list = coin_id_list[0:50] #[339419] # [1182, 3808] # coin_id_list[0:5]
-
+        #coin_id_list = coin_id_list[0:50]
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
             data = p.map(self.data_puller.get_social_stats, coin_id_list)
         new_dict = {}
@@ -220,6 +220,8 @@ class SHCryptoCompare:
                 self.insert_coin_x_facebook(new_dict[scl])
             if scl == 'CodeRepository':
                 self.insert_coin_x_coderepository(new_dict[scl])
+            if scl == 'CryptoCompare':
+                self.insert_coin_x_cryptocompare(new_dict[scl])
 
     def insert_coin_x_twitter(self, data):
 
@@ -378,6 +380,8 @@ class SHCryptoCompare:
                         ,'last_push'
                         ,'last_update')
 
+        rows = ()
+
         for coin_id, value in data.items():
             print(coin_id, value)
             for elem in value['List']:
@@ -396,7 +400,7 @@ class SHCryptoCompare:
                             else:
                                 add_to_row = datetime.datetime.utcfromtimestamp(int(elem[key_value])).strftime('%Y-%m-%dT%H:%M:%S')
                             row = row + (add_to_row,)
-                        elif elem[key_value] == 'undefined':
+                        elif elem[key_value] in ('undefined', 'NaN'):
                             add_to_row = None
                             row = row + (add_to_row,)
                         else:
@@ -406,7 +410,73 @@ class SHCryptoCompare:
                         add_to_row = None
                         row = row + (add_to_row,)
                 print(row)
-                self.conn.insert(schema=self.schema, table=self.stats_coderepository_table, columns=columns, data=(row,))
+                rows = rows + (row,)
+
+
+        #pprint.pprint(rows)
+        self.conn.insert(schema=self.schema, table=self.stats_coderepository_table, columns=columns, data=rows)
+
+    def insert_coin_x_cryptocompare(self, data):
+        pprint.pprint('cryptocompare')
+        #pprint.pprint(data)
+
+        columns = (
+              'coin_id'
+            , 'comments'
+            , 'followers'
+            , 'page_views'
+            , 'page_views_analysis'
+            , 'page_views_charts'
+            , 'page_views_forums'
+            , 'page_views_influence'
+            , 'page_views_markets'
+            , 'page_views_news'
+            , 'page_views_orderbook'
+            , 'page_views_overview'
+            , 'page_views_trades'
+            , 'posts'
+            , 'points'
+        )
+
+        key_values = (
+              'Comments'
+            , 'Followers'
+            , 'PageViews'
+            , 'PageViewsSplit'
+            , 'Posts'
+            , 'Points'
+        )
+
+        key_parent_source = ('Analysis', 'Charts', 'Forum', 'Influence', 'Markets', 'News', 'Orderbook',
+                                                                                            'Overview', 'Trades')
+
+        rows = ()
+
+        for coin_id, value in data.items():
+            print(coin_id, value)
+
+            row = tuple((str(coin_id),))
+            add_to_row = None
+            for key_value in key_values:
+                if key_value in value.keys():
+                    if isinstance(value[key_value], dict):
+                        subrow = ()
+                        for key_ps in key_parent_source:
+                            add_to_row = value[key_value][key_ps]
+                            row = row + (add_to_row,)
+                    elif value[key_value] in ('undefined', 'NaN'):
+                        add_to_row = None
+                        row = row + (add_to_row,)
+                    else:
+                        add_to_row = value[key_value]
+                        row = row + (add_to_row,)
+                else:
+                    add_to_row = None
+                    row = row + (add_to_row,)
+            self.conn.insert(schema=self.schema, table=self.stats_cryptocompare_table, columns=columns, data=rows)
+            rows = rows + (row,)
+
+        # self.conn.insert(schema=self.schema, table=self.stats_cryptocompare_table, columns=columns, data=rows)
 
 
 

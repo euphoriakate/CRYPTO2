@@ -22,14 +22,9 @@ if __name__ == '__main__':
 
     dp = DPCryptoCompare()
 
+
     CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
-    CC_schema.insert_social_stats(social=['CodeRepository'])
+    CC_schema.insert_social_stats(social=['CryptoCompare'])
     conn.close()
 
     logging.info(str(datetime.datetime.now()) + ' Program ended an execution.')
-
-'''
-('5301', 'undefined', 'undefined', None, None, None, 0, 0, 'undefined', 'undefined', 'undefined', 0, -1, '', '', -1, '', '')
-coin_id,url,language,created_dt,last_push_dt,last_update_dt,subscribers,stars,size,open_issues,open_pull_issues,open_total_issues,closed_issues,closed_pull_issues,closed_total_issues,fork,forks,parent_internal_id,parent_internal_name,parent_internal_url,source_internal_id,source_internal_name,source_internal_url
-%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
-'''
