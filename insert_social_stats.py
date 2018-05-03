@@ -22,9 +22,8 @@ if __name__ == '__main__':
 
     dp = DPCryptoCompare()
 
-
     CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
-    CC_schema.insert_social_stats(social=['CryptoCompare'])
+    CC_schema.insert_social_stats(social=['Twitter', 'Reddit', 'Facebook', 'CodeRepository'])
     conn.close()
 
     logging.info(str(datetime.datetime.now()) + ' Program ended an execution.')
