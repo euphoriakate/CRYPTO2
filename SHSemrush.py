@@ -40,12 +40,11 @@ class SHSemrush:
 
     def insert_url_attendace(self):
 
-        url_rows = self.conn.select('public', 'url_for_check', ['url'])
+        url_rows = self.conn.select('public', 'url_for_check_v', ['url'])
         url_list = [url_row[0] for url_row in url_rows]
 
-        rows_to_insert = ()
-
         for url in url_list:
+            rows_to_insert = ()
             data = self.data_puller.get_url_attendance(url)
             rows_count = data.count('\n')
 
@@ -55,8 +54,7 @@ class SHSemrush:
                 row = tuple(list_of_row_values)
                 rows_to_insert = rows_to_insert + (row,)
 
-        if len(rows_to_insert) != 0:
-            return self.conn.insert(self.schema, self.url_table, self.url_table_columns, rows_to_insert)
-        else:
-            logging.error('There are nothing to insert to ' + self.schema + '.' + self.keyword_table)
-            pass
+            if len(rows_to_insert) != 0:
+                self.conn.insert(self.schema, self.url_table, self.url_table_columns, rows_to_insert)
+            else:
+                logging.error('There are nothing to insert to ' + self.schema + '.' + self.keyword_table)
