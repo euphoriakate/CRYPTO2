@@ -197,7 +197,7 @@ class SHCryptoCompare:
         social_dict = {}
         new_dict = {}
 
-        # coin_id_list = coin_id_list[0:50]
+        #coin_id_list = coin_id_list[0:50]
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
             data = p.map(self.data_puller.get_social_stats, coin_id_list)
         new_dict = {}

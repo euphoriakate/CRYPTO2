@@ -11,8 +11,9 @@ class SHSemrush:
         self.schema = 'semrush'
         self.keyword_table = 'keyword_search_volume'
         self.keyword_table_columns = ('report_dt', 'keyword', 'database', 'search_volume')
-        self.url_table = 'exchange_attendance'
-        self.url_table_columns = ('report_dt', 'country', 'domain', 'rank', 'organic_traffic', 'adwords_traffic')
+        self.url_table = 'url_attendance'
+        self.url_table_columns = ('report_dt', 'country', 'domain', 'rank', 'organic_traffic',
+                                  'adwords_traffic', 'db_code')
         self.data_puller = data_puller
 
     def insert_keyword_search_volume(self):
@@ -40,18 +41,19 @@ class SHSemrush:
 
     def insert_url_attendace(self):
 
-        url_rows = self.conn.select('public', 'url_for_check_v', ['url'])
-        url_list = [url_row[0] for url_row in url_rows]
+        url_rows = self.conn.select('public', 'url_for_check_v', ['url', 'db_code'])
+        url_code_list = [[url_row[0], url_row[1]] for url_row in url_rows]
 
-        for url in url_list:
+        for url in url_code_list:
             rows_to_insert = ()
-            data = self.data_puller.get_url_attendance(url)
+            data = self.data_puller.get_url_attendance(url[0])
+
             rows_count = data.count('\n')
 
             for i in range(1, rows_count):
                 list_of_row_values = data.split('\n')[i].strip().split(';')
                 list_of_row_values[0] = str(datetime.datetime.strptime(str(list_of_row_values[0]), '%Y%m%d'))
-                row = tuple(list_of_row_values)
+                row = tuple(list_of_row_values) + tuple([url[1]])
                 rows_to_insert = rows_to_insert + (row,)
 
             if len(rows_to_insert) != 0:
