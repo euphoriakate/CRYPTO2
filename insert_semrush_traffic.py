@@ -1,13 +1,10 @@
-from DPSemrush import DPSEMRush
-from DPCryptoCompare import DPCryptoCompare
-from SHCryptoCompare import SHCryptoCompare
+from DPSemrushTA import DPSEMRushTA
 from Connector import Connector
 import os
 import getpass
 import sys
-from SHSemrush import SHSemrush
+from SHSemrushTA import SHSemrushTA
 import datetime
-import pprint
 
 
 if __name__ == '__main__':
@@ -20,11 +17,10 @@ if __name__ == '__main__':
                  ' from directory ' + os.path.dirname(os.path.abspath(__file__)))
     conn = Connector('prosphero')  # set connection to database
 
-    dp = DPCryptoCompare()
+    SEMRushTA_dp = DPSEMRushTA()
+    semrush_ta_schema = SHSemrushTA(connection=conn, data_puller=SEMRushTA_dp)
+    semrush_ta_schema.insert_traffic_summary()
 
-    CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
-    CC_schema.insert_social_stats(social=['Twitter', 'Reddit', 'Facebook', 'CodeRepository'])
-    #CC_schema.insert_social_stats(social=['Facebook', 'CodeRepository'])
     conn.close()
 
     logging.info(str(datetime.datetime.now()) + ' Program ended an execution.')
