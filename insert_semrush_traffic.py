@@ -19,7 +19,8 @@ if __name__ == '__main__':
 
     SEMRushTA_dp = DPSEMRushTA()
     semrush_ta_schema = SHSemrushTA(connection=conn, data_puller=SEMRushTA_dp)
-    semrush_ta_schema.insert_traffic_summary()
+    #semrush_ta_schema.insert_traffic_summary()
+    semrush_ta_schema.insert_traffic_summary_history()
 
     conn.close()
 
