@@ -80,7 +80,19 @@ class DPCryptoCompare(DataPuller):
                 https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DASH,REP&tsyms=BTC,USD,EUR,XMR&e=Coinbase
                 https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH&tsyms=USD
         """
-        return self.get_coin_price(from_currency, to_currency, exchange, multiprice=True)
+        try:
+
+            data = self.get_coin_price(from_currency, to_currency, exchange, multiprice=True)
+
+            if 'Response' in data.keys():
+                raise NameError(data['Warning'])
+
+        except NameError:
+            logging.error(NameError)
+            pass
+
+        else:
+            return data
 
     def get_coin_pricemultifull(self, from_currency='BTC', to_currency='KICK', exchange=None):
         """

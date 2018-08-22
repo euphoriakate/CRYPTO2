@@ -4,8 +4,13 @@ import datetime
 import pprint
 import inspect
 import multiprocessing
+from functools import reduce
 
 logging.getLogger(__name__)
+
+
+def coalesce(*arg):
+  return reduce(lambda x, y: x if x is not None else y, arg)
 
 
 class SHCryptoCompare:
@@ -30,41 +35,58 @@ class SHCryptoCompare:
 
     def get_all_coins(self, type):
         if type in self.coin_ident_type:
-            return self.conn.select(self.schema, self.coin_table, type)
+            return self.conn.select(self.schema_last_value, self.coin_table, type)
         else:
             logging.error('Please call function ' + str(inspect.stack()[0][3]) + ' with proper value in type param ' + str(self.coin_ident_type))
 
-    def insert_price(self, rows):
+    def insert_price(self, rows, manual_table=None):
         columns = ('source_coin', 'target_coin', 'price')
-        return self.conn.insert(self.schema, self.price_table, columns, rows)
+        return self.conn.insert(self.schema, coalesce(manual_table, self.price_table), columns, rows)
 
-    def insert_current_price(self, target_coin='BTC,USD'):
+    def insert_current_price(self, source_coin=None, target_coin='BTC,USD', manual_table=None):
 
-        coin_list = self.get_all_coins(type='code')  # load all coins codes from table with coins within this schema
-        logging.info([coin[0] for coin in coin_list])
-        j = 0
-        tsyms_list = []  # dictionary with short coin list elements for insert to API url
-        # filling dictionary tsyms_list
-        while j < len(coin_list):
-            last_cycle_elem = min(j + self.max_tsyms_elem, len(coin_list))
-            tsyms = ','.join([str(x[0]) for x in coin_list[j:last_cycle_elem]])
-            j += self.max_tsyms_elem
-            tsyms_list.append(tsyms)
+        if source_coin:
+            coin_list = source_coin.split(',')  # load all coins codes from table with coins within this schema
+            logging.info([coin[0] for coin in coin_list])
 
-        price_dict = []  # dictionary source_coin, target coin, price
-        # filling dictionary price_dict
-        for tsyms in tsyms_list:
-            data = self.data_puller.get_coin_pricemulti(from_currency=tsyms, to_currency=target_coin)
-            price_dict.append(data)
+            price_dict = []
 
+            for coin in coin_list:
+                data = self.data_puller.get_coin_pricemulti(from_currency=coin, to_currency=target_coin)
+                if data:
+                    price_dict.append(data)
+
+        else:
+            coin_list = self.get_all_coins(type='code')
+            logging.info([coin[0] for coin in coin_list])
+            j = 0
+            coin_list = sorted(coin_list)
+            tsyms_list = []  # dictionary with short coin list elements for insert to API url
+            # filling dictionary tsyms_list
+            while j < len(coin_list):
+                last_cycle_elem = min(j + self.max_tsyms_elem, len(coin_list))
+                tsyms = ','.join([str(x[0]) for x in coin_list[j:last_cycle_elem]])
+                j += self.max_tsyms_elem
+                tsyms_list.append(tsyms)
+
+            price_dict = []  # dictionary source_coin, target coin, price
+            # filling dictionary price_dict
+            for tsyms in tsyms_list:
+                data = self.data_puller.get_coin_pricemulti(from_currency=tsyms, to_currency=target_coin)
+                if data:
+                    price_dict.append(data)
         rows = ()
+
+        pprint.pprint(price_dict)
 
         for price_row in price_dict:
             for source_coin_cd, target_coin_dict in price_row.items():
                 for target_coin_cd, price in target_coin_dict.items():
                     row = (source_coin_cd, target_coin_cd, price)
                     rows = rows + (row,)
-        self.insert_price(rows)
+
+        self.insert_price(rows, manual_table)
+
 
     def insert_exchange(self):
         columns = ('exchange_name', 'source_coin', 'target_coin')
@@ -197,7 +219,6 @@ class SHCryptoCompare:
         social_dict = {}
         new_dict = {}
 
-        #coin_id_list = coin_id_list[0:50]
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
             data = p.map(self.data_puller.get_social_stats, coin_id_list)
         new_dict = {}
