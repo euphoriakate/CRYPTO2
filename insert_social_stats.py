@@ -1,13 +1,10 @@
-from DPSemrush import DPSEMRush
 from DPCryptoCompare import DPCryptoCompare
 from SHCryptoCompare import SHCryptoCompare
 from Connector import Connector
 import os
 import getpass
 import sys
-from SHSemrush import SHSemrush
 import datetime
-import pprint
 
 
 if __name__ == '__main__':
@@ -24,7 +21,6 @@ if __name__ == '__main__':
 
     CC_schema = SHCryptoCompare(conn, DPCryptoCompare())  # materialize schema CryptoCompare here
     CC_schema.insert_social_stats(social=['Twitter', 'Reddit', 'Facebook', 'CodeRepository'])
-    #CC_schema.insert_social_stats(social=['Facebook', 'CodeRepository'])
     conn.close()
 
     logging.info(str(datetime.datetime.now()) + ' Program ended an execution.')

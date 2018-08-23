@@ -3,14 +3,15 @@ from collections import defaultdict
 import datetime
 import pprint
 import inspect
-import multiprocessing
+import multiprocess
 from functools import reduce
+import contextlib
 
 logging.getLogger(__name__)
 
 
 def coalesce(*arg):
-  return reduce(lambda x, y: x if x is not None else y, arg)
+    return reduce(lambda x, y: x if x is not None else y, arg)
 
 
 class SHCryptoCompare:
@@ -86,7 +87,6 @@ class SHCryptoCompare:
                     rows = rows + (row,)
 
         self.insert_price(rows, manual_table)
-
 
     def insert_exchange(self):
         columns = ('exchange_name', 'source_coin', 'target_coin')
@@ -205,7 +205,6 @@ class SHCryptoCompare:
                             rows = rows + (row,)
                             print(row)
 
-
                     self.conn.insert(schema='cryptocompare', table='exchange_x_coin',
                                      columns=columns, data=rows)
 
@@ -217,20 +216,26 @@ class SHCryptoCompare:
         coin_list_tuple = self.get_all_coins('id')
         coin_id_list = [str(x[0]) for x in coin_list_tuple]
         social_dict = {}
+
+        with contextlib.closing(multiprocess.Pool(processes=multiprocess.cpu_count())) as p:
+            data = p.map(self.data_puller.get_social_stats, sorted(coin_id_list))
+            p.terminate()
+
         new_dict = {}
 
-        with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
-            data = p.map(self.data_puller.get_social_stats, coin_id_list)
-        new_dict = {}
+        data = [(x, y) for (x, y) in data if y]
+        data = {k: v for k, v in data}
 
-        for num, coin_id in enumerate(coin_id_list):
-            print(num, coin_id)
-            social_dict[coin_id] = data[num]
+        for key, value in data.items():
+            print(key)
+
+            social_dict[key] = value
             for scl in social:
                 if scl not in new_dict.keys():
-                    new_dict[scl] = {coin_id: data[num][scl]}
+                    new_dict[scl] = {key: data[key][scl]}
+                    print()
                 else:
-                    new_dict[scl][coin_id] = data[num][scl]
+                    new_dict[scl][key] = data[key][scl]
 
         for scl in social:
             if scl == 'Twitter':
@@ -243,6 +248,7 @@ class SHCryptoCompare:
                 self.insert_coin_x_coderepository(new_dict[scl])
             if scl == 'CryptoCompare':
                 self.insert_coin_x_cryptocompare(new_dict[scl])
+
 
     def insert_coin_x_twitter(self, data):
 

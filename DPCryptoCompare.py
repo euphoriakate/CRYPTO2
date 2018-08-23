@@ -145,12 +145,13 @@ class DPCryptoCompare(DataPuller):
         print(ts)
         return self.get_coin_price(from_currency, to_currency, exchange)
 
-    def get_social_stats(self, currency_id):
+    def get_social_stats(self, coin_id):
         payload = {
-                    'id': currency_id
+                    'id': coin_id
                     }
 
         r = requests.get(self.url_social, params=payload)
+        print(r.url)
         logging.info(str(datetime.datetime.now()) + ' ' + r.url)
 
-        return self.json_data_obtain(url=self.url_social, param=payload)['Data']
+        return (coin_id, self.json_data_obtain(url=self.url_social, param=payload)['Data'])
