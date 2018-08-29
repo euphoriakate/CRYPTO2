@@ -62,6 +62,23 @@ class Connector:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
+    def select_group_by(self, schema, table, columns=None, where='', group_by='', agr_function=''):
+
+        if isinstance(columns, str):
+            columns = [columns]
+        if columns is not None:
+            columns_to_select = ','.join(columns)
+        else:
+            columns_to_select = '*'
+        sql = 'select ' + agr_function + '(' + columns_to_select + ') from ' + schema + '.' + table + ' ' + where + group_by
+        logging.info(sql)
+        try:
+            self.cur.execute(sql)
+            data = self.cur.fetchall()
+            return data
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+
     def close(self):
         self.conn.close()
         logging.info('Connection has been closed')
