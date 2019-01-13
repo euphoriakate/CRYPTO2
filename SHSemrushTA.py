@@ -15,7 +15,7 @@ class SHSemrushTA:
     def __init__(self, connection, data_puller):
         self.conn = connection
         self.schema = 'semrush'
-        self.summary_table = 'traffic_summary_temp'
+        self.summary_table = 'traffic_summary'
         self.summary_table_columns_api = ('report_dt',
                                           'domain',
                                           'users',
