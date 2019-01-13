@@ -7,14 +7,15 @@ logging.getLogger(__name__)
 
 
 def coalesce(*arg):
-  return reduce(lambda x, y: x if x is not None else y, arg)
+    return reduce(lambda x, y: x if x is not None else y, arg)
+
 
 class SHSemrushTA:
 
     def __init__(self, connection, data_puller):
         self.conn = connection
         self.schema = 'semrush'
-        self.summary_table = 'traffic_summary'
+        self.summary_table = 'traffic_summary_temp'
         self.summary_table_columns_api = ('report_dt',
                                           'domain',
                                           'users',
@@ -73,7 +74,7 @@ class SHSemrushTA:
 
     def insert_traffic_summary(self, api):
 
-        url_rows = self.conn.select('public', 'url_for_check_v', ['url', 'db_code'])
+        url_rows = self.conn.select('public', 'url_for_check_v', ['url_for_search', 'db_code'], "where 1 = 1")
         url_code_list = [[url_row[0].replace('https://', '')
                                     .replace('http://', '')
                                     .replace('/', '')
@@ -81,13 +82,15 @@ class SHSemrushTA:
 
         rows_to_insert = ()
 
-        max_month = self.conn.select_group_by(self.schema, self.summary_table, columns='report_dt', agr_function='max')[0][0]
-        max_month = coalesce(max_month, datetime.datetime(year=2016, month=1, day=1))
-        #month_to_load = max_month + relativedelta(months=1)
-        print(max_month)
+        # max_month = self.conn.select_group_by(self.schema, self.summary_table, columns='report_dt', agr_function='max')[0][0]
+        # max_month = coalesce(max_month, datetime.datetime(year=2016, month=1, day=1))
+        # month_to_load = max_month + relativedelta(months=1)
 
         for url in url_code_list:
-
+            print(url)
+            max_month = self.conn.select_group_by(self.schema, self.summary_table, columns='report_dt', agr_function='max', where = "where 1 = 1 and domain = '" + url[0] + "'")[0][0]
+            max_month = coalesce(max_month, datetime.datetime(year=2016, month=1, day=1))
+            print(max_month)
             if api:
 
                 data = self.data_puller.get_domain_summary(str([url[0]]).replace('\'', '"'))
@@ -106,8 +109,6 @@ class SHSemrushTA:
                 rows_to_insert = ()
                 data = self.data_puller.get_domain_summary(str([url[0]]).replace('\'', '"'), api=False)
 
-
-
                 device_list = ['mobile', 'desktop']
 
                 for device in device_list:
@@ -124,17 +125,15 @@ class SHSemrushTA:
                                 row = row + (url[1],)
 
                                 rows_to_insert = rows_to_insert + (row,)
-                
 
             if len(rows_to_insert) != 0:
                 self.conn.insert(self.schema, self.summary_table, self.summary_table_columns, rows_to_insert)
             else:
                 logging.error('There are nothing to insert to ' + self.schema + '.' + self.summary_table)
 
-
     def insert_traffic_summary_history(self, api):
 
-        url_rows = self.conn.select('public', 'url_for_check_v', ['url', 'db_code'])
+        url_rows = self.conn.select('public', 'url_for_check_v', ['url_for_search', 'db_code'])
         url_code_list = [
             [url_row[0].replace('https://', '').replace('http://', '').replace('/', '').replace('www.', ''),
              url_row[1]] for url_row in url_rows]
